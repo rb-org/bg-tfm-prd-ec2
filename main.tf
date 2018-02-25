@@ -8,6 +8,7 @@ provider "template" {
   version = ">= 1.0"
 }
 
+
 module "web_tier" {
   source = "./web_tier/"
 
@@ -21,7 +22,7 @@ module "web_tier" {
   web_asg_ami_blu       = "${var.bg-web-ws-ami_blu}"
   web_asg_ami_grn       = "${var.bg-web-ws-ami_grn}"
   web_asg_inst          = "${var.web_asg_inst}"
-  private_subnets       = ["${data.terraform_remote_state.network.private_subnet_ids}"]
+  private_subnets       = ["${data.terraform_remote_state.network.private_subnet_cidrs}"]
   web_asg_min           = "${var.web_asg_min}"
   web_asg_max           = "${var.web_asg_max}"
   web_asg_des_blu       = "${var.bg-web-ws-des_blu}"
@@ -33,12 +34,11 @@ module "web_tier" {
   iam_instance_profile  = "${module.iam.default_profile_name}"
   allowed_ips           = "${var.allowed_ips}"
   alb_web_sg_id         = "${module.load_balancers.alb_web_sg_id}"
-
   #alb_web_tg_arn        = "${module.load_balancers.alb_web_tg_arn}"
-  win_sg_id = "${module.security.win_sg_id}"
+  win_sg_id             = "${module.security.win_sg_id}"
 
   #alb_web_sg_id  = "${data.terraform_remote_state.network.alb_web_sg_id}"
-  alb_web_tg_arns  = "${module.load_balancers.alb_web_tg_arns}"
+  alb_web_tg_arns = "${module.load_balancers.alb_web_tg_arns}"
   alb_web_tg_names = "${module.load_balancers.alb_web_tg_names}"
 }
 

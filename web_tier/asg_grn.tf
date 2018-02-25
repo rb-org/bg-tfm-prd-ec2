@@ -1,6 +1,6 @@
 module "asg_web_grn" {
   # source = "git::ssh://git@github.com/exactsoftware/xyz-tfm-mods-asg"
-  source = "git@github.com:rb-org/tfm-mod-asg"
+  source = "git@github.com:exactsoftware/xyz-tfm-mods-asg//asg"
 
   ami_id               = "${var.web_asg_ami_grn[var.region]}"
   instance_type        = "${var.web_asg_inst[terraform.workspace]}"

@@ -12,7 +12,7 @@ data "aws_region" "current" {}
 module "alb_web" {
   #source  = "terraform-aws-modules/alb/aws"
   #version = "2.4.0"
-  source = "git@github.com:rb-org/terraform-aws-alb"
+  source = "../../modules/terraform-aws-alb"
 
   alb_name            = "${var.name_prefix}-${terraform.workspace}-alb-web"
   alb_security_groups = ["${module.alb_web_sg.this_security_group_id}"]
@@ -24,7 +24,7 @@ module "alb_web" {
   alb_protocols                    = ["HTTPS"]
   backend_port                     = "80"
   backend_protocol                 = "HTTP"
-  cookie_duration                  = "1"
+  cookie_duration                  = "86400"
   health_check_healthy_threshold   = 3
   health_check_interval            = 300
   health_check_matcher             = "200-302"
@@ -33,13 +33,13 @@ module "alb_web" {
   health_check_timeout             = 5
   health_check_unhealthy_threshold = 3
   security_policy                  = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  tg_count                         = 2
-  tg_name_suffix                   = ["-blu", "-grn"]
+  tg_count  = 2
+  tg_name_suffix = ["-blu", "-grn"]
 
-  log_bucket_name     = "${var.name_prefix}-${terraform.workspace}-alb-web-logs"
+  log_bucket_name = "${var.name_prefix}-${terraform.workspace}-alb-web-logs"
   log_location_prefix = "${data.aws_region.current.name}"
-  enable_logging      = true
-  create_log_bucket   = true
+  enable_logging = true
+  create_log_bucket = true
 
   tags = "${merge(var.default_tags, 
       map("Environment", format("%s", var.environment)), 

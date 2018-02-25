@@ -27,8 +27,7 @@ variable "key_name" {
 }
 
 variable "allowed_ips" {
-  type    = "list"
-  default = ["0.0.0.0/0"]
+  type = "list"
 }
 
 variable "cert_domain" {}

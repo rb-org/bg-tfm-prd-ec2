@@ -84,7 +84,9 @@ jobs:
       - run: 
           name: plan
           command: |
-            terraform plan -var-file=env/${WKSPC}.tfvars -var acc_id=${acc_id} -var cert_domain=${cert_domain} -no-color -out=plans/tfm.plan
+            terraform plan -var-file=env/${WKSPC}.tfvars -var allowed_ips=${allowed_ips} \
+            -var acc_id=${acc_id} -var cert_domain=${cert_domain} \
+            -no-color -input=false -out=plans/tfm.plan
       - run: terraform apply -no-color -input=false -auto-approve plans/tfm.plan
       - persist_to_workspace:
           root: plans
@@ -140,7 +142,9 @@ jobs:
       - run: 
           name: plan
           command: |
-            terraform plan -var-file=env/${WKSPC}.tfvars -var allowed_ips=${allowed_ips} -var acc_id=${acc_id} -var cert_domain=${cert_domain} -no-color -input=false -out=plans/tfm.plan
+            terraform plan -var-file=env/${WKSPC}.tfvars -var allowed_ips=${allowed_ips} \
+            -var acc_id=${acc_id} -var cert_domain=${cert_domain} \
+            -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans
           paths:
@@ -210,7 +214,9 @@ jobs:
       - run: 
           name: plan
           command: |
-            terraform plan -var-file=env/${WKSPC}.tfvars -var allowed_ips=${allowed_ips} -var acc_id=${acc_id} -var cert_domain=${cert_domain} -no-color -input=false -out=plans/tfm.plan
+            terraform plan -var-file=env/${WKSPC}.tfvars -var allowed_ips=${allowed_ips} \
+            -var acc_id=${acc_id} -var cert_domain=${cert_domain} \
+            -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans
           paths:
