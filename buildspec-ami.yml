@@ -47,9 +47,9 @@ phases:
         if [ ! -f "./bin/packer" ]; then unzip packer.zip -d ./bin; fi
       - |
         # try to fix the validator pem 
-        # echo $CHEF_PEM > ./validator.pem
-        # ./validator.pem | sed 's|\\\\n|\n|g; s/.$//; s/^.//' > ./${CHEF_ORG}-validator.pem
-        # echo $DB_SECRET > ./encrypted_data_bag_secret
+        echo $CHEF_PEM > ./validator.pem
+        ./validator.pem | sed 's|\\\\n|\n|g; s/.$//; s/^.//' > ./${CHEF_ORG}-validator.pem
+        echo $DB_SECRET > ./encrypted_data_bag_secret
       - |
         # check we got downloads correctly <<< this still needs to be resolved
         cat ./${CHEF_ORG}-validator.pem
