@@ -1,5 +1,5 @@
 variable "name_prefix" {
-  default = "bg" # This should be shortened to exol when moving to a live
+  default = "bg" 
 }
 
 variable "region" {}
