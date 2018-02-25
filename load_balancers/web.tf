@@ -33,13 +33,13 @@ module "alb_web" {
   health_check_timeout             = 5
   health_check_unhealthy_threshold = 3
   security_policy                  = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  tg_count  = 2
-  tg_name_suffix = ["-blu", "-grn"]
+  tg_count                         = 2
+  tg_name_suffix                   = ["-blu", "-grn"]
 
-  log_bucket_name = "${var.name_prefix}-${terraform.workspace}-alb-web-logs"
+  log_bucket_name     = "${var.name_prefix}-${terraform.workspace}-alb-web-logs"
   log_location_prefix = "${data.aws_region.current.name}"
-  enable_logging = true
-  create_log_bucket = true
+  enable_logging      = true
+  create_log_bucket   = true
 
   tags = "${merge(var.default_tags, 
       map("Environment", format("%s", var.environment)), 
