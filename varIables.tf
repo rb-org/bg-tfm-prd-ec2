@@ -1,5 +1,5 @@
 variable "name_prefix" {
-  default = "bg" 
+  default = "bg"
 }
 
 variable "region" {}
