@@ -8,7 +8,6 @@ provider "template" {
   version = ">= 1.0"
 }
 
-
 module "web_tier" {
   source = "./web_tier/"
 
@@ -34,11 +33,12 @@ module "web_tier" {
   iam_instance_profile  = "${module.iam.default_profile_name}"
   allowed_ips           = "${var.allowed_ips}"
   alb_web_sg_id         = "${module.load_balancers.alb_web_sg_id}"
+
   #alb_web_tg_arn        = "${module.load_balancers.alb_web_tg_arn}"
-  win_sg_id             = "${module.security.win_sg_id}"
+  win_sg_id = "${module.security.win_sg_id}"
 
   #alb_web_sg_id  = "${data.terraform_remote_state.network.alb_web_sg_id}"
-  alb_web_tg_arns = "${module.load_balancers.alb_web_tg_arns}"
+  alb_web_tg_arns  = "${module.load_balancers.alb_web_tg_arns}"
   alb_web_tg_names = "${module.load_balancers.alb_web_tg_names}"
 }
 
