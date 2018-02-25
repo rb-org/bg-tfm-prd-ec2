@@ -60,7 +60,7 @@
     {
       "type": "chef-client",
       "server_url": "https://{{ user `chef_svr`}}/organizations/{{user `chef_org`}}",
-      "encrypted_data_bag_secret_path": "./encrypted_data_bag_secret",
+      "encrypted_data_bag_secret_path": "/tmp/encrypted_data_bag_secret",
       "chef_environment": "{{user `chef_env`}}",
       "guest_os_type": "windows",
       "run_list": [
@@ -68,7 +68,7 @@
       ],
       "ssl_verify_mode": "verify_none",
       "validation_client_name": "{{user `chef_org`}}-validator",
-      "validation_key_path": "./{{user `chef_org`}}-validator.pem",
+      "validation_key_path": "/tmp/{{user `chef_org`}}-validator.pem",
       "skip_clean_client": false,
       "skip_clean_node": false,
       "install_command": "powershell.exe -Command \"(New-Object System.Net.WebClient).DownloadFile('http://chef.io/chef/install.msi', 'C:\\Windows\\Temp\\chef.msi');Start-Process 'msiexec' -ArgumentList '/qb /i C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait\""
