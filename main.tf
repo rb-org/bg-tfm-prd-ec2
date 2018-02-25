@@ -21,7 +21,7 @@ module "web_tier" {
   web_asg_ami_blu       = "${var.bg-web-ws-ami_blu}"
   web_asg_ami_grn       = "${var.bg-web-ws-ami_grn}"
   web_asg_inst          = "${var.web_asg_inst}"
-  private_subnets       = ["${data.terraform_remote_state.network.private_subnet_cidrs}"]
+  private_subnets       = ["${data.terraform_remote_state.network.private_subnet_ids}"]
   web_asg_min           = "${var.web_asg_min}"
   web_asg_max           = "${var.web_asg_max}"
   web_asg_des_blu       = "${var.bg-web-ws-des_blu}"
