@@ -19,7 +19,7 @@ key_name = {
 bg-web-ws-ami_blu = {type = "map" eu-west-1 = "ami-21eb9658"}
 bg-web-ws-ami_grn = {type = "map" eu-west-1 = "ami-21eb9658"}
 
-bg-web-ws-des_blu = 0
+bg-web-ws-des_blu = 1
 bg-web-ws-des_grn = 0
 
 app_version_web_blu = "20171221.59"
