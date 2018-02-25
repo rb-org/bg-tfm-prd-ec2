@@ -12,7 +12,7 @@ data "aws_region" "current" {}
 module "alb_web" {
   #source  = "terraform-aws-modules/alb/aws"
   #version = "2.4.0"
-  source = "../../modules/terraform-aws-alb"
+  source = "git@github.com:rb-org/terraform-aws-alb"
 
   alb_name            = "${var.name_prefix}-${terraform.workspace}-alb-web"
   alb_security_groups = ["${module.alb_web_sg.this_security_group_id}"]
@@ -24,7 +24,7 @@ module "alb_web" {
   alb_protocols                    = ["HTTPS"]
   backend_port                     = "80"
   backend_protocol                 = "HTTP"
-  cookie_duration                  = "86400"
+  cookie_duration                  = "1"
   health_check_healthy_threshold   = 3
   health_check_interval            = 300
   health_check_matcher             = "200-302"
