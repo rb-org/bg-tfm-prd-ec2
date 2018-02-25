@@ -36,9 +36,9 @@ phases:
       - |
         # Get Chef validator pem and encrypted secrets hash <<  not working properly for validator pem - line feeds
         echo "Pulling down Chef validator..."
-        aws ssm get-parameters --with-decryption --names $CHEF_PEM --query 'Parameters[0].Value' --region $AWS_REGION | sed 's|\\\\n|\n|g; s/.$//; s/^.//' > ./${CHEF_ORG}-validator.pem
+        aws ssm get-parameters --with-decryption --names $CHEF_PEM --query 'Parameters[0].Value' --region $AWS_REGION | sed 's|\\\\n|\n|g; s/.$//; s/^.//' > /tmp/${CHEF_ORG}-validator.pem
         echo "Pulling down Data Bag secret file..."
-        aws ssm get-parameters --with-decryption --names $DB_SECRET --query 'Parameters[0].Value' --region $AWS_REGION | sed 's/.$//; s/^.//' > ./encrypted_data_bag_secret
+        aws ssm get-parameters --with-decryption --names $DB_SECRET --query 'Parameters[0].Value' --region $AWS_REGION | sed 's/.$//; s/^.//' > /tmp/encrypted_data_bag_secret
       - |
         # Install Packer
         echo "Installing HashiCorp Packer..."
@@ -47,9 +47,9 @@ phases:
         if [ ! -f "./bin/packer" ]; then unzip packer.zip -d ./bin; fi
       - |
         # try to fix the validator pem 
-        echo $CHEF_PEM > /tmp/${CHEF_ORG}validator.pem
+        #echo $CHEF_PEM > /tmp/${CHEF_ORG}validator.pem
         #/tmp/validator.pem | sed 's|\\\\n|\n|g; s/.$//; s/^.//' > /tmp/${CHEF_ORG}-validator.pem
-        echo $DB_SECRET > /tmp/encrypted_data_bag_secret
+        #echo $DB_SECRET > /tmp/encrypted_data_bag_secret
       - |
         # check we got downloads correctly <<< this still needs to be resolved
         cat /tmp/${CHEF_ORG}-validator.pem
