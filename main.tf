@@ -2,6 +2,7 @@ provider "aws" {
   version                 = "~> 1.9.0"
   region                  = "${var.region}"
   shared_credentials_file = "~/.aws/credentials"
+  allowed_account_ids     = ["${var.acc_id}"]
 }
 
 provider "template" {
