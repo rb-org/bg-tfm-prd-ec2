@@ -27,6 +27,6 @@ data "terraform_remote_state" "common" {
   config {
     region = "${var.region}"
     bucket = "bg-tfm-state"
-    key    = "env:/${terraform.workspace}/bg-common.tfstate"
+    key    = "env:/xxx/bg-common.tfstate"
   }
 }
