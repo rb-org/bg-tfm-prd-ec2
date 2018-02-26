@@ -47,8 +47,9 @@ phases:
         if [ ! -f "./bin/packer" ]; then unzip packer.zip -d ./bin; fi
       - |
         # Create validator pem and db secret files
-        echo $CHEF_PEM > /tmp/${CHEF_ORG}-validator_tmp.pem
-        tr -d '\r' < /tmp/${CHEF_ORG}-validator_tmp.pem > /tmp/${CHEF_ORG}-validator.pem
+        # echo $CHEF_PEM > /tmp/${CHEF_ORG}-validator_tmp.pem
+        # tr -d '\r' < /tmp/${CHEF_ORG}-validator_tmp.pem > /tmp/${CHEF_ORG}-validator.pem
+        aws s3 cp s3://bg-codebuild-artifacts/${CHEF_ORG}-validator.pem /tmp/${CHEF_ORG}-validator.pem
         echo $DB_SECRET > /tmp/encrypted_data_bag_secret
       - |
         # check we got downloads correctly <<< this still needs to be resolved
