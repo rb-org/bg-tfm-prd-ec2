@@ -130,7 +130,7 @@ phases:
         #git add files/userdata*
         git add env/*.tfvars
         # git status
-        git commit -a -m "Update ASG ${CHEF_ROLE}. Created $AMI_ID in $AWS_REGION with build ver $APP_VER"
+        git commit -a -m "Update ASG ${CHEF_ROLE}" -m "Created $AMI_ID in $AWS_REGION with build ver $APP_VER"
         git push -v https://${AUTO_USER}:${GH_TOKEN}@github.com/${REPO} ${CHEF_ROLE}-${APP_VER}
 artifacts:
   files:
