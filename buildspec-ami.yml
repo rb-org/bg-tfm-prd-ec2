@@ -104,7 +104,7 @@ phases:
           sed -i "s/${CHEF_ROLE}-des_${OFF} = 0/${CHEF_ROLE}-des_${OFF} = ${DES_ON}/g; s/${CHEF_ROLE}-des_${ON} = ${DES_ON}/${CHEF_ROLE}-des_${ON} = 0/g;" ${WKSPC}.tfvars
           # Update the AMI id of the old/inactive/off ASG
           echo "Update AMI id"
-          AMI_ID_OFF=$(cat ${WKSPC}.tfvars | grep ami_${OFF})
+          AMI_ID_OFF=$(cat ${WKSPC}.tfvars | grep ${CHEF_ROLE}-ami_${OFF})
           sed -i "s/${AMI_ID_OFF}/${CHEF_ROLE}-ami_${OFF} = {type = \"map\" eu-west-1 = \"${AMI_ID}\"}/g;" ${WKSPC}.tfvars
           # Update the App Version tag of the old/inactive/off ASG
           echo "Update App Version"
