@@ -100,11 +100,14 @@ phases:
           echo "desired = $DES_ON"
           # Change the desired number of instances on the old/inactive/off ASG to >=1
           # Change the desired number of instances on the current/active/on ASG to 0
+          echo "Change desired instance count"
           sed -i "s/${CHEF_ROLE}-des_${OFF} = 0/${CHEF_ROLE}-des_${OFF} = ${DES_ON}/g; s/${CHEF_ROLE}-des_${ON} = ${DES_ON}/${CHEF_ROLE}-des_${ON} = 0/g;" ${WKSPC}.tfvars
           # Update the AMI id of the old/inactive/off ASG
+          echo "Update AMI id"
           AMI_ID_OFF=$(cat ${WKSPC}.tfvars | grep ami_${OFF})
           sed -i "s/${AMI_ID_OFF}/${CHEF_ROLE}-ami_${OFF} = {type = \"map\" eu-west-1 = \"${AMI_ID}\"}/g;" ${WKSPC}.tfvars
           # Update the App Version tag of the old/inactive/off ASG
+          echo "Update App Version"
           APP_VER_OFF=$(cat ${WKSPC}.tfvars | grep app_version_web_${OFF})
           sed -i "s/${APP_VER_OFF}/app_version_web_${OFF} = \"${APP_VER}\"/g;" ${WKSPC}.tfvars
         done
@@ -127,7 +130,7 @@ phases:
         #git add files/userdata*
         git add env/*.tfvars
         # git status
-        git commit -a -m "Update ASG ${CHEF_ROLE}. Created $AMI_ID in $AWS_REGION with build ver $APP_VER"
+        git commit -a -m "Update ASG ${CHEF_ROLE}" -m "Created $AMI_ID in $AWS_REGION with build ver $APP_VER"
         git push -v https://${AUTO_USER}:${GH_TOKEN}@github.com/${REPO} ${CHEF_ROLE}-${APP_VER}
 artifacts:
   files:
