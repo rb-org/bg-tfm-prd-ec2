@@ -49,7 +49,6 @@ phases:
         # Create validator pem and db secret files
         echo $CHEF_PEM > /tmp/${CHEF_ORG}-validator_tmp.pem
         tr -d '\r' < /tmp/${CHEF_ORG}-validator_tmp.pem > /tmp/${CHEF_ORG}-validator.pem
-        #/tmp/validator.pem | sed 's|\\\\n|\n|g; s/.$//; s/^.//' > /tmp/${CHEF_ORG}-validator.pem
         echo $DB_SECRET > /tmp/encrypted_data_bag_secret
       - |
         # check we got downloads correctly <<< this still needs to be resolved
@@ -57,10 +56,6 @@ phases:
         cat /tmp/${CHEF_ORG}-validator.pem
         echo "db secret"
         cat /tmp/encrypted_data_bag_secret
-        #echo "validator3.pem"
-        #cat /tmp/${CHEF_ORG}-validator2.pem
-        #echo "db secret2"
-        #cat /tmp/encrypted_data_bag_secret2
       - |
         # validate packer json
         echo "Validating ${SVR_TYPE}.json"
@@ -83,7 +78,7 @@ phases:
         cd env
         # for WKSPC in $(ls *.tfvars | sed s/.tfvars/''/) << this works but falls over for P01 
         # because of "eu-central-1" and making specific replaements based on "eu-west-1"
-        for WKSPC in d66 t77
+        for WKSPC in d202 t201
         do
           # Work out which ASG should be updated i.e. which is the old/inactive/off ASG
           DES_BLU=$(echo $(cat ${WKSPC}.tfvars | grep "${CHEF_ROLE}-des_blu") | sed s/"${CHEF_ROLE}-des_blu = "/''/)
@@ -125,10 +120,10 @@ phases:
         # cd ..
         echo $SSH_KEY > /home/temp_ssh_key
         export GIT_SSH_COMMAND="ssh -i /home/temp_ssh_key"
-        git config --global user.email "eolautomation@exact.com"
-        git config --global user.name "eolautomation"
+        git config --global user.email "rb-auto@rb-org.com"
+        git config --global user.name "rb-auto"
         git checkout -b "${CHEF_ROLE}-${APP_VER}"
-        git add files/userdata*
+        #git add files/userdata*
         git add env/*.tfvars
         # git status
         git commit -a -m "Update ASG ${CHEF_ROLE}. Created $AMI_ID in $AWS_REGION with build ver $APP_VER"
