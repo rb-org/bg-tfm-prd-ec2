@@ -52,7 +52,13 @@ phases:
         echo $DB_SECRET > /tmp/encrypted_data_bag_secret2
       - |
         # check we got downloads correctly <<< this still needs to be resolved
+        echo "validator.pem"
+        cat /tmp/${CHEF_ORG}-validator.pem
+        echo "db secret"
+        cat /tmp/encrypted_data_bag_secret
+        echo "validator3.pem"
         cat /tmp/${CHEF_ORG}-validator2.pem
+        echo "db secret2"
         cat /tmp/encrypted_data_bag_secret2
       - |
         # validate packer json
