@@ -6,17 +6,17 @@ $app_version    = $tags | ? Key -eq AppVersion | Select -ExpandProperty Value
 
 install-windowsfeature web-server, web-mgmt-console
 
-$content = '
+$content = "
     <!DOCTYPE html>
     <html>
-    <body bgcolor="#0066ff">
+    <body bgcolor=`"#0066ff`">
     <font size=5>
     <h1>Build ver - $app_version </h1>
     <h2>AMI id - $ami_id </h2>
     </font>
     </body>
     </html>
-'
+"
 Set-Content -Value $content -Path "c:\inetpub\wwwroot\index.html"
 
 </powershell>
