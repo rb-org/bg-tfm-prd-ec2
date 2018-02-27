@@ -17,10 +17,10 @@ key_name = {
 # AMI id needs to map to a region. Becos we can't do map of maps AMI id is set here while instance type map is set in variables
 # It's important the ami_blu and ami_grn maps are not spread over multiple lines
 bg-web-ws-ami_blu = {type = "map" eu-west-1 = "ami-8eb5cff7"}
-bg-web-ws-ami_grn = {type = "map" eu-west-1 = "ami-89b9c3f0"}
+bg-web-ws-ami_grn = {type = "map" eu-west-1 = "ami-801550f9"}
 
-bg-web-ws-des_blu = 2
-bg-web-ws-des_grn = 0
+bg-web-ws-des_blu = 0
+bg-web-ws-des_grn = 2
 
 app_version_web_blu = "20180225.16"
-app_version_web_grn = "20180225.15"
+app_version_web_grn = "20180225.18"
