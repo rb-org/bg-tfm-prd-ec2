@@ -18,8 +18,8 @@ env:
   parameter-store:
     SSH_KEY: "/github/rb-org/automation/ssh_key"
     GH_TOKEN: "/github/rb-org/automation/access_token"
-    ACCESS_KEY: "/codebuild/user/access_key"
-    SECRET_KEY: "/codebuild/user/secret_key"
+    ACCESS_KEY: "/cdb/user/access_key"
+    SECRET_KEY: "/cdb/user/secret_key"
     CHEF_PEM: "/chef/server/validator_pem"
     DB_SECRET: "/chef/encrypted_data_bag_secret"
 phases:
