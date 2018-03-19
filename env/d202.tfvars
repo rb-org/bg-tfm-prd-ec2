@@ -8,7 +8,7 @@ az_count = 2
 
 key_name = {
   type      = "map"
-  eu-west-1 = "bg-d202-euw"
+  eu-west-1 = "xyz-bg-d202-euw"
 }
 
 // Web Tier

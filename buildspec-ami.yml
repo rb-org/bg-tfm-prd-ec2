@@ -101,7 +101,9 @@ phases:
           # Change the desired number of instances on the old/inactive/off ASG to >=1
           # Change the desired number of instances on the current/active/on ASG to 0
           echo "Change desired instance count"
-          sed -i "s/${CHEF_ROLE}-des_${OFF} = 0/${CHEF_ROLE}-des_${OFF} = ${DES_ON}/g; s/${CHEF_ROLE}-des_${ON} = ${DES_ON}/${CHEF_ROLE}-des_${ON} = 0/g;" ${WKSPC}.tfvars
+          sed -i "s/${CHEF_ROLE}-des_${OFF} = 0/${CHEF_ROLE}-des_${OFF} = ${DES_ON}/g" ${WKSPC}.tfvars
+          # Shutting down the fall back instances is a manual task
+          # sed -i "s/${CHEF_ROLE}-des_${ON} = ${DES_ON}/${CHEF_ROLE}-des_${ON} = 0/g;" ${WKSPC}.tfvars
           # Update the AMI id of the old/inactive/off ASG
           echo "Update AMI id"
           AMI_ID_OFF=$(cat ${WKSPC}.tfvars | grep ${CHEF_ROLE}-ami_${OFF})
