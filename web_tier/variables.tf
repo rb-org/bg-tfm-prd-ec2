@@ -51,13 +51,13 @@ variable "allowed_ips" {
   type = "list"
 }
 
-variable "alb_web_tg_arns" {
-  type = "list"
-}
+variable "alb_web_blu_tg_arn" {}
 
-variable "alb_web_tg_names" {
-  type = "list"
-}
+variable "alb_web_blu_tg_name" {}
+
+variable "alb_web_grn_tg_arn" {}
+
+variable "alb_web_grn_tg_name" {}
 
 variable "alb_web_sg_id" {}
 

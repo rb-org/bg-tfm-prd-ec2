@@ -20,7 +20,7 @@ module "asg_web_grn" {
   desired_capacity = "${var.web_asg_des_grn}"
 
   #target_group_arns    = ["${var.alb_tg_arn}"]
-  alb_target_group_arn = "${data.aws_lb_target_group.grn.arn}"
+  alb_target_group_arn = "${var.alb_web_grn_tg_arn}"
   vpc_zone_identifier  = ["${var.private_subnets}"]
 
   // The health_check_type can be EC2 or ELB and defaults to ELB

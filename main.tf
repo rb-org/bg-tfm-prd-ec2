@@ -38,9 +38,11 @@ module "web_tier" {
   #alb_web_tg_arn        = "${module.load_balancers.alb_web_tg_arn}"
   win_sg_id = "${module.security.win_sg_id}"
 
-  #alb_web_sg_id  = "${data.terraform_remote_state.network.alb_web_sg_id}"
-  alb_web_tg_arns  = "${module.load_balancers.alb_web_tg_arns}"
-  alb_web_tg_names = "${module.load_balancers.alb_web_tg_names}"
+  #alb_web_sg_id  = "${data.terraform_remote_state.network.alb_web_blu_sg_id}"
+  alb_web_blu_tg_arn  = "${module.load_balancers.alb_web_blu_tg_arn}"
+  alb_web_blu_tg_name = "${module.load_balancers.alb_web_blu_tg_name}"
+  alb_web_grn_tg_arn  = "${module.load_balancers.alb_web_grn_tg_arn}"
+  alb_web_grn_tg_name = "${module.load_balancers.alb_web_grn_tg_name}"
 }
 
 module "iam" {
