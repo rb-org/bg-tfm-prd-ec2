@@ -36,6 +36,9 @@ variable "zone_id" {}
 
 // Web Tier
 
+variable www_dns_weight_blu {}
+variable www_dns_weight_grn {}
+
 variable "app_version_web_blu" {}
 variable "app_version_web_grn" {}
 variable "bg-web-ws-des_blu" {}

@@ -5,7 +5,7 @@ Module for EC2 instances, ASG & ALB
 |Branch|Build Status|
 |---|:---:|
 |dev | [![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/dev.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/dev) |
-| uat | [[![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/uat.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/uat) |
+| uat | [![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/uat.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/uat) |
 | master| [![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/master.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/master) |
 
 ## Terraform workspaces

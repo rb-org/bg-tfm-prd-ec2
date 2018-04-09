@@ -104,14 +104,21 @@ phases:
           sed -i "s/${CHEF_ROLE}-des_${OFF} = 0/${CHEF_ROLE}-des_${OFF} = ${DES_ON}/g" ${WKSPC}.tfvars
           # Shutting down the fall back instances is a manual task
           # sed -i "s/${CHEF_ROLE}-des_${ON} = ${DES_ON}/${CHEF_ROLE}-des_${ON} = 0/g;" ${WKSPC}.tfvars
+
           # Update the AMI id of the old/inactive/off ASG
           echo "Update AMI id"
           AMI_ID_OFF=$(cat ${WKSPC}.tfvars | grep ${CHEF_ROLE}-ami_${OFF})
           sed -i "s/${AMI_ID_OFF}/${CHEF_ROLE}-ami_${OFF} = {type = \"map\" eu-west-1 = \"${AMI_ID}\"}/g;" ${WKSPC}.tfvars
+
           # Update the App Version tag of the old/inactive/off ASG
           echo "Update App Version"
           APP_VER_OFF=$(cat ${WKSPC}.tfvars | grep app_version_web_${OFF})
           sed -i "s/${APP_VER_OFF}/app_version_web_${OFF} = \"${APP_VER}\"/g;" ${WKSPC}.tfvars
+
+          # Update the DNS weighting to switch from old to new
+          echo "Update DNS Weighting"
+          sed -i "s/www_dns_weight_${OFF} = 0/www_dns_weight_${OFF} = 100/g" ${WKSPC}.tfvars
+          sed -i "s/www_dns_weight_${ON} = 0/www_dns_weight_${ON} = 0/g" ${WKSPC}.tfvars
         done
         # Update userdata for demo purposes
         # cd ../files
