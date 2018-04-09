@@ -24,3 +24,6 @@ bg-web-ws-des_grn = 0
 
 app_version_web_blu = "20171221.59"
 app_version_web_grn = "20171221.58"
+
+www_dns_weight_blu = 0
+www_dns_weight_grn = 100

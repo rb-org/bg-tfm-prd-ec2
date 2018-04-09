@@ -44,18 +44,6 @@ module "alb_web_blu" {
     }"
 }
 
-resource "aws_route53_record" "blu" {
-  zone_id = "${var.zone_id}"
-  name    = "ws-blu.${var.cert_domain}"
-  type    = "A"
-
-  alias {
-    name                   = "${module.alb_web_blu.alb_dns_name}"
-    zone_id                = "${module.alb_web_blu.alb_zone_id}"
-    evaluate_target_health = true
-  }
-}
-
 module "alb_web_grn" {
   source  = "terraform-aws-modules/alb/aws"
   version = "2.5.0"
@@ -89,16 +77,4 @@ module "alb_web_grn" {
       map("Workspace", format("%s", terraform.workspace))
       )
     }"
-}
-
-resource "aws_route53_record" "grn" {
-  zone_id = "${var.zone_id}"
-  name    = "ws-grn.${var.cert_domain}"
-  type    = "A"
-
-  alias {
-    name                   = "${module.alb_web_grn.alb_dns_name}"
-    zone_id                = "${module.alb_web_grn.alb_zone_id}"
-    evaluate_target_health = true
-  }
 }

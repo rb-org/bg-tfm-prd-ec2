@@ -65,13 +65,15 @@ module "security" {
 module "load_balancers" {
   source = "./load_balancers"
 
-  name_prefix       = "${var.name_prefix}"
-  environment       = "${var.environment}"
-  allowed_ips       = ["${var.allowed_ips}"]
-  vpc_id            = "${data.terraform_remote_state.network.vpc_id}"
-  vpc_cidr          = "${var.vpc_cidr}"
-  default_tags      = "${var.default_tags}"
-  cert_domain       = "${var.cert_domain}"
-  zone_id           = "${var.zone_id}"
-  public_subnet_ids = "${data.terraform_remote_state.network.public_subnet_ids}"
+  name_prefix        = "${var.name_prefix}"
+  environment        = "${var.environment}"
+  allowed_ips        = ["${var.allowed_ips}"]
+  vpc_id             = "${data.terraform_remote_state.network.vpc_id}"
+  vpc_cidr           = "${var.vpc_cidr}"
+  default_tags       = "${var.default_tags}"
+  cert_domain        = "${var.cert_domain}"
+  zone_id            = "${var.zone_id}"
+  public_subnet_ids  = "${data.terraform_remote_state.network.public_subnet_ids}"
+  www_dns_weight_blu = "${var.www_dns_weight_blu}"
+  www_dns_weight_grn = "${var.www_dns_weight_grn}"
 }
