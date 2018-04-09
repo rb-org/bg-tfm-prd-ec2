@@ -118,7 +118,7 @@ phases:
           # Update the DNS weighting to switch from old to new
           echo "Update DNS Weighting"
           sed -i "s/www_dns_weight_${OFF} = 0/www_dns_weight_${OFF} = 100/g" ${WKSPC}.tfvars
-          sed -i "s/www_dns_weight_${ON} = 0/www_dns_weight_${ON} = 0/g" ${WKSPC}.tfvars
+          sed -i "s/www_dns_weight_${ON} = 100/www_dns_weight_${ON} = 0/g" ${WKSPC}.tfvars
         done
         # Update userdata for demo purposes
         # cd ../files
