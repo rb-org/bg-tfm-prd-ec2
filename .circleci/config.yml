@@ -1,70 +1,5 @@
 version: 2
 jobs:
-  lint:
-    docker:
-      - image: hashicorp/terraform:light
-    steps:
-      - checkout
-      - run:
-          name: tfm_fmt
-          command: |
-            lint_failed="no"
-            for file in $(find . -name "*tf")
-            do
-              lines=$(terraform fmt -write=false -list=true ${file} | wc -l | sed 's/[^0-9]//g')
-              if [ ${lines} != "0" ]
-              then
-                echo "Please run terraform fmt ${file}"
-                lint_failed="yes"
-              fi
-            done
-            if [ ${lint_failed} != "no" ]; then exit 1; fi
-  feat2dev_validate: 
-    docker:
-      - image: hashicorp/terraform:light
-    environment: 
-      - WKSPC: "d202"
-    steps:
-      - add_ssh_keys
-      - checkout
-      - run: 
-          name: init
-          command: |
-            terraform init -input=false
-            if [ $? != "0" ]; then exit $?; fi
-      - run: 
-          name: select_workspace
-          command: |
-            terraform workspace select $WKSPC
-            get_wkspc=$(terraform workspace show)
-            echo $get_wkspc
-            if [ $get_wkspc != $WKSPC ]; then exit 1; fi
-      - run: 
-          name: tflint
-          command: |
-            apk add --update openssl
-            wget https://github.com/wata727/tflint/releases/download/v0.5.4/tflint_linux_amd64.zip
-            unzip tflint_linux_amd64.zip
-            mkdir -p /usr/local/tflint/bin
-            export PATH=/usr/local/tflint/bin:$PATH
-            install tflint /usr/local/tflint/bin
-            # tflint --var-file=env/${WKSPC}.tfvars --error-with-issues
-      - run:
-          name: validate
-          command: |
-            validate_failed="no"
-            TF_DIRS=$(find $(pwd) -type f -iname "*.tf*" -exec dirname '{}' \; | grep -v ".terraform" | sort | uniq | xargs echo)
-            for DIR in $TF_DIRS
-            do
-              echo Processing $DIR
-              lines=$(terraform validate -input=false -check-variables=false -no-color $DIR -var-file=env/${WKSPC}.tfvars | wc -l | sed 's/[^0-9]//g')
-              if [ ${lines} != "0" ]
-              then
-                echo "Please run terraform validate ${file}"
-                validate_failed="yes"
-              fi
-            done
-            if [ ${validate_failed} != "no" ]; then exit 1; fi
   feat2dev_plan:
     docker:
       - image: hashicorp/terraform:light
@@ -73,6 +8,11 @@ jobs:
     steps:
       - add_ssh_keys
       - checkout
+      - run: 
+          name: lint-validate
+          command: |
+            .circleci/lint.sh
+            .circleci/validate.sh
       - run: 
           name: init
           command: |
@@ -87,6 +27,7 @@ jobs:
             echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
             echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
             echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+            echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
   dev_plan:
     docker:
@@ -97,6 +38,11 @@ jobs:
       - add_ssh_keys
       - checkout
       - run: 
+          name: lint-validate
+          command: |
+            .circleci/lint.sh
+            .circleci/validate.sh
+      - run: 
           name: init
           command: |
             terraform init -input=false
@@ -110,6 +56,7 @@ jobs:
             echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
             echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
             echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+            echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans
@@ -134,42 +81,6 @@ jobs:
       - attach_workspace:
           at: plans
       - run: terraform apply -no-color -input=false -auto-approve plans/tfm.plan
-  dev2uat_validate: 
-    docker:
-      - image: hashicorp/terraform:light
-    environment: 
-      - WKSPC: "t201"
-    steps:
-      - add_ssh_keys
-      - checkout
-      - run: 
-          name: init
-          command: |
-            terraform init -input=false
-            if [ $? != "0" ]; then exit $?; fi
-      - run: 
-          name: select_workspace
-          command: |
-            terraform workspace select $WKSPC
-            get_wkspc=$(terraform workspace show)
-            echo $get_wkspc
-            if [ $get_wkspc != $WKSPC ]; then exit 1; fi
-      - run:
-          name: validate
-          command: |
-            validate_failed="no"
-            TF_DIRS=$(find $(pwd) -type f -iname "*.tf*" -exec dirname '{}' \; | grep -v ".terraform" | sort | uniq | xargs echo)
-            for DIR in $TF_DIRS
-            do
-              echo Processing $DIR
-              lines=$(terraform validate -input=false -check-variables=false -no-color $DIR -var-file=env/${WKSPC}.tfvars | wc -l | sed 's/[^0-9]//g')
-              if [ ${lines} != "0" ]
-              then
-                echo "Please run terraform validate ${file}"
-                validate_failed="yes"
-              fi
-            done
-            if [ ${validate_failed} != "no" ]; then exit 1; fi
   dev2uat_plan:
     docker:
       - image: hashicorp/terraform:light
@@ -178,6 +89,11 @@ jobs:
     steps:
       - add_ssh_keys
       - checkout
+      - run: 
+          name: lint-validate
+          command: |
+            .circleci/lint.sh
+            .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
@@ -187,6 +103,7 @@ jobs:
             echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
             echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
             echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+            echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
   uat_plan:
     docker:
@@ -196,6 +113,11 @@ jobs:
     steps:
       - add_ssh_keys
       - checkout
+      - run: 
+          name: lint-validate
+          command: |
+            .circleci/lint.sh
+            .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
@@ -205,6 +127,7 @@ jobs:
             echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
             echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
             echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+            echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans
@@ -225,42 +148,6 @@ jobs:
       - attach_workspace:
           at: plans
       - run: terraform apply -no-color -input=false -auto-approve plans/tfm.plan
-  uat2prd_validate: 
-    docker:
-      - image: hashicorp/terraform:light
-    environment: 
-      - WKSPC: "p200"
-    steps:
-      - add_ssh_keys
-      - checkout
-      - run: 
-          name: init
-          command: |
-            terraform init -input=false
-            if [ $? != "0" ]; then exit $?; fi
-      - run: 
-          name: select_workspace
-          command: |
-            terraform workspace select $WKSPC
-            get_wkspc=$(terraform workspace show)
-            echo $get_wkspc
-            if [ $get_wkspc != $WKSPC ]; then exit 1; fi
-      - run:
-          name: validate
-          command: |
-            validate_failed="no"
-            TF_DIRS=$(find $(pwd) -type f -iname "*.tf*" -exec dirname '{}' \; | grep -v ".terraform" | sort | uniq | xargs echo)
-            for DIR in $TF_DIRS
-            do
-              echo Processing $DIR
-              lines=$(terraform validate -input=false -check-variables=false -no-color $DIR -var-file=env/${WKSPC}.tfvars | wc -l | sed 's/[^0-9]//g')
-              if [ ${lines} != "0" ]
-              then
-                echo "Please run terraform validate ${file}"
-                validate_failed="yes"
-              fi
-            done
-            if [ ${validate_failed} != "no" ]; then exit 1; fi
   uat2prd_plan:
     docker:
       - image: hashicorp/terraform:light
@@ -269,6 +156,11 @@ jobs:
     steps:
       - add_ssh_keys
       - checkout
+      - run: 
+          name: lint-validate
+          command: |
+            .circleci/lint.sh
+            .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
@@ -278,6 +170,7 @@ jobs:
             echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
             echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
             echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+            echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
   prd_plan:
     docker:
@@ -287,6 +180,11 @@ jobs:
     steps:
       - add_ssh_keys
       - checkout
+      - run: 
+          name: lint-validate
+          command: |
+            .circleci/lint.sh
+            .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
@@ -296,6 +194,7 @@ jobs:
             echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
             echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
             echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+            echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans
@@ -319,26 +218,7 @@ workflows:
   version: 2
   feat2dev:
     jobs:
-      - lint:
-          filters:
-            branches:  
-              ignore: 
-                - master
-                - uat
-                - dev
-      - feat2dev_validate:
-          requires: 
-            - lint
-          filters:
-            branches:
-              ignore: 
-                - master
-                - uat
-                - dev
-              
       - feat2dev_plan:
-          requires: 
-            - feat2dev_validate
           filters:
             branches:
               ignore: 
@@ -346,6 +226,8 @@ workflows:
                 - uat
                 - dev    
       - dev_plan:
+          requires: 
+            - feat2dev_plan
           filters: 
             branches:
               only: dev
@@ -364,27 +246,7 @@ workflows:
                 - uat   
   dev2uat:
     jobs:
-      - lint:
-          filters:
-            branches:
-              only: dev
-              ignore: 
-                - master
-                - uat
-                              
-      - dev2uat_validate:
-          requires: 
-            - lint
-          filters:
-            branches:
-              only: dev     
-              ignore: 
-                - master
-                - uat
-                         
       - dev2uat_plan:
-          requires: 
-            - dev2uat_validate
           filters:
             branches:
               only: dev  
@@ -393,6 +255,8 @@ workflows:
                 - uat
                 
       - uat_plan:
+          requires: 
+            - dev2uat_plan
           filters:
             branches:
               only: uat   
@@ -410,25 +274,7 @@ workflows:
                 - dev  
   uat2prd:
     jobs:
-    - lint:
-        filters:
-          branches:
-            only: uat
-            ignore: 
-              - master
-              - dev
-    - uat2prd_validate:
-        requires: 
-          - lint
-        filters:
-          branches:
-            only: uat
-            ignore: 
-              - master
-              - dev
     - uat2prd_plan:
-        requires: 
-          - uat2prd_validate
         filters:
           branches:
             only: uat
@@ -436,6 +282,8 @@ workflows:
               - master
               - dev
     - prd_plan:
+        requires: 
+          - uat2prd_plan
         filters:
           branches:
             only: master
