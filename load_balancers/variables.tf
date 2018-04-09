@@ -8,6 +8,7 @@ variable "allowed_ips" {
 
 variable "environment" {}
 variable "cert_domain" {}
+variable "zone_id" {}
 
 variable "default_tags" {
   type = "map"

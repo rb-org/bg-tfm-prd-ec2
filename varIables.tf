@@ -32,6 +32,7 @@ variable "allowed_ips" {
 }
 
 variable "cert_domain" {}
+variable "zone_id" {}
 
 // Web Tier
 

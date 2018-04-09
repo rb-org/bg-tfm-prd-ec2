@@ -18,7 +18,7 @@ module "web_tier" {
   environment           = "${var.environment}"
   default_tags          = "${var.default_tags}"
   vpc_id                = "${data.terraform_remote_state.network.vpc_id}"
-  vpc_cidr              = "${var.vpc_cidr}"
+  vpc_cidr              = "${data.terraform_remote_state.network.vpc_cidr}"
   web_asg_ami_blu       = "${var.bg-web-ws-ami_blu}"
   web_asg_ami_grn       = "${var.bg-web-ws-ami_grn}"
   web_asg_inst          = "${var.web_asg_inst}"
@@ -72,5 +72,6 @@ module "load_balancers" {
   vpc_cidr          = "${var.vpc_cidr}"
   default_tags      = "${var.default_tags}"
   cert_domain       = "${var.cert_domain}"
+  zone_id           = "${var.zone_id}"
   public_subnet_ids = "${data.terraform_remote_state.network.public_subnet_ids}"
 }
