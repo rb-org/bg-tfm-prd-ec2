@@ -9,17 +9,16 @@ jobs:
       - add_ssh_keys
       - checkout
       - run: 
-          name: lint-validate
-          command: |
-            .circleci/lint.sh
-            .circleci/validate.sh
-      - run: 
           name: init
           command: |
             terraform init -input=false
             if [ $? != "0" ]; then exit $?; fi
+      - run: 
+          name: lint-validate
+          command: |
+            .circleci/lint.sh
+            .circleci/validate.sh
       - run: mkdir -p plans
-      - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
@@ -38,17 +37,16 @@ jobs:
       - add_ssh_keys
       - checkout
       - run: 
-          name: lint-validate
-          command: |
-            .circleci/lint.sh
-            .circleci/validate.sh
-      - run: 
           name: init
           command: |
             terraform init -input=false
             if [ $? != "0" ]; then exit $?; fi
+      - run: 
+          name: lint-validate
+          command: |
+            .circleci/lint.sh
+            .circleci/validate.sh
       - run: mkdir -p plans
-      - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
@@ -76,7 +74,6 @@ jobs:
             terraform init -input=false
             if [ $? != "0" ]; then exit $?; fi
       - run: mkdir -p plans
-      - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - attach_workspace:
           at: plans
@@ -90,12 +87,16 @@ jobs:
       - add_ssh_keys
       - checkout
       - run: 
+          name: init
+          command: |
+            terraform init -input=false
+            if [ $? != "0" ]; then exit $?; fi
+      - run: 
           name: lint-validate
           command: |
             .circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
-      - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
@@ -114,12 +115,16 @@ jobs:
       - add_ssh_keys
       - checkout
       - run: 
+          name: init
+          command: |
+            terraform init -input=false
+            if [ $? != "0" ]; then exit $?; fi
+      - run: 
           name: lint-validate
           command: |
             .circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
-      - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
@@ -141,10 +146,13 @@ jobs:
     steps:
       - add_ssh_keys
       - checkout
+      - run: 
+          name: init
+          command: |
+            terraform init -input=false
+            if [ $? != "0" ]; then exit $?; fi
       - run: mkdir -p plans
-      - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
-      
       - attach_workspace:
           at: plans
       - run: terraform apply -no-color -input=false -auto-approve plans/tfm.plan
@@ -157,12 +165,16 @@ jobs:
       - add_ssh_keys
       - checkout
       - run: 
+          name: init
+          command: |
+            terraform init -input=false
+            if [ $? != "0" ]; then exit $?; fi
+      - run: 
           name: lint-validate
           command: |
             .circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
-      - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
@@ -181,12 +193,16 @@ jobs:
       - add_ssh_keys
       - checkout
       - run: 
+          name: init
+          command: |
+            terraform init -input=false
+            if [ $? != "0" ]; then exit $?; fi
+      - run: 
           name: lint-validate
           command: |
             .circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
-      - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
@@ -208,8 +224,12 @@ jobs:
     steps:
       - add_ssh_keys
       - checkout
+      - run: 
+          name: init
+          command: |
+            terraform init -input=false
+            if [ $? != "0" ]; then exit $?; fi
       - run: mkdir -p plans
-      - run: terraform init -input=false
       - run: terraform workspace select $WKSPC      
       - attach_workspace:
           at: plans
