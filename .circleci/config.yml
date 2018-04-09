@@ -246,8 +246,6 @@ workflows:
                 - uat
                 - dev    
       - dev_plan:
-          requires: 
-            - feat2dev_plan
           filters: 
             branches:
               only: dev
@@ -275,8 +273,6 @@ workflows:
                 - uat
                 
       - uat_plan:
-          requires: 
-            - dev2uat_plan
           filters:
             branches:
               only: uat   
@@ -302,8 +298,6 @@ workflows:
               - master
               - dev
     - prd_plan:
-        requires: 
-          - uat2prd_plan
         filters:
           branches:
             only: master
