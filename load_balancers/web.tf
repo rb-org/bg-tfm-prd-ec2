@@ -13,8 +13,6 @@ module "alb_web_blu" {
   source  = "terraform-aws-modules/alb/aws"
   version = "2.5.0"
 
-  #source = "git@github.com:rb-org/terraform-aws-alb"
-
   alb_name                         = "${var.name_prefix}-${terraform.workspace}-alb-web-blu"
   alb_security_groups              = ["${module.alb_web_sg.this_security_group_id}"]
   certificate_arn                  = "${data.aws_acm_certificate.wildcard.arn}"
@@ -34,13 +32,11 @@ module "alb_web_blu" {
   health_check_unhealthy_threshold = 3
   security_policy                  = "ELBSecurityPolicy-TLS-1-2-2017-01"
 
-  #tg_count                         = 2
-  #tg_name_suffix                   = ["-blu", "-grn"]
-
   log_bucket_name     = "${var.name_prefix}-${terraform.workspace}-alb-web-blu-logs"
   log_location_prefix = "${data.aws_region.current.name}"
   enable_logging      = true
   create_log_bucket   = true
+
   tags = "${merge(var.default_tags, 
       map("Environment", format("%s", var.environment)), 
       map("Workspace", format("%s", terraform.workspace))
@@ -50,7 +46,7 @@ module "alb_web_blu" {
 
 resource "aws_route53_record" "blu" {
   zone_id = "${var.zone_id}"
-  name    = "blu.${var.cert_domain}"
+  name    = "ws-blu.${var.cert_domain}"
   type    = "A"
 
   alias {
@@ -63,8 +59,6 @@ resource "aws_route53_record" "blu" {
 module "alb_web_grn" {
   source  = "terraform-aws-modules/alb/aws"
   version = "2.5.0"
-
-  #source = "git@github.com:rb-org/terraform-aws-alb"
 
   alb_name                         = "${var.name_prefix}-${terraform.workspace}-alb-web-grn"
   alb_security_groups              = ["${module.alb_web_sg.this_security_group_id}"]
@@ -85,13 +79,11 @@ module "alb_web_grn" {
   health_check_unhealthy_threshold = 3
   security_policy                  = "ELBSecurityPolicy-TLS-1-2-2017-01"
 
-  #tg_count                         = 2
-  #tg_name_suffix                   = ["-blu", "-grn"]
-
   log_bucket_name     = "${var.name_prefix}-${terraform.workspace}-alb-web-grn-logs"
   log_location_prefix = "${data.aws_region.current.name}"
   enable_logging      = true
   create_log_bucket   = true
+
   tags = "${merge(var.default_tags, 
       map("Environment", format("%s", var.environment)), 
       map("Workspace", format("%s", terraform.workspace))
@@ -101,7 +93,7 @@ module "alb_web_grn" {
 
 resource "aws_route53_record" "grn" {
   zone_id = "${var.zone_id}"
-  name    = "grn.${var.cert_domain}"
+  name    = "ws-grn.${var.cert_domain}"
   type    = "A"
 
   alias {
