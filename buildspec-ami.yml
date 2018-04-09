@@ -1,0 +1,148 @@
+version: 0.2
+env:
+  variables:
+    BUILD_VPC_ID: ""
+    BUILD_SUBNET_ID: ""
+    AWS_REGION: ""
+    AWS_ACCOUNTS: ""
+    AWS_REGIONS: ""
+    SVR_TYPE: ""
+    CHEF_ENV: ""
+    CHEF_ROLE: ""
+    CHEF_ORG: ""
+    CHEF_SVR: ""
+    BUILD_VER: ""
+    REPO_SSH: "rb-auto@github.com:rb-org/bg-tfm-prd-ec2.git"
+    REPO: "rb-org/bg-tfm-prd-ec2.git"
+    AUTO_USER: "rb-auto"
+  parameter-store:
+    SSH_KEY: "/github/rb-org/automation/ssh_key"
+    GH_TOKEN: "/github/rb-org/automation/access_token"
+    ACCESS_KEY: "/cdb/user/access_key"
+    SECRET_KEY: "/cdb/user/secret_key"
+    CHEF_PEM: "/chef/server/validator_pem"
+    DB_SECRET: "/chef/encrypted_data_bag_secret"
+phases:
+  pre_build:
+    commands:
+      - export AWS_ACCESS_KEY_ID="$ACCESS_KEY"
+      - export AWS_SECRET_ACCESS_KEY="$SECRET_KEY"
+      - |
+        # Install AWS CLI
+        apt update
+        apt-get install python python-pip -y
+        pip install --upgrade pip
+        pip install awscli
+      - |
+        # Get Chef validator pem and encrypted secrets hash <<  not working properly for validator pem - line feeds
+        echo "Pulling down Chef validator..."
+        #aws ssm get-parameters --with-decryption --names $CHEF_PEM --query 'Parameters[0].Value' --region $AWS_REGION | sed 's|\\\\n|\n|g; s/.$//; s/^.//' > /tmp/${CHEF_ORG}-validator.pem
+        echo "Pulling down Data Bag secret file..."
+        #aws ssm get-parameters --with-decryption --names $DB_SECRET --query 'Parameters[0].Value' --region $AWS_REGION | sed 's/.$//; s/^.//' > /tmp/encrypted_data_bag_secret
+      - |
+        # Install Packer
+        echo "Installing HashiCorp Packer..."
+        if [ ! -f "./packer.zip" ]; then curl -qL -o packer.zip https://releases.hashicorp.com/packer/1.2.0/packer_1.2.0_linux_amd64.zip; fi
+        if [ ! -d "./bin" ]; then mkdir ./bin; fi
+        if [ ! -f "./bin/packer" ]; then unzip packer.zip -d ./bin; fi
+      - |
+        # Create validator pem and db secret files
+        # echo $CHEF_PEM > /tmp/${CHEF_ORG}-validator_tmp.pem
+        # tr -d '\r' < /tmp/${CHEF_ORG}-validator_tmp.pem > /tmp/${CHEF_ORG}-validator.pem
+        aws s3 cp s3://bg-codebuild-artifacts/${CHEF_ORG}-validator.pem /tmp/${CHEF_ORG}-validator.pem
+        echo $DB_SECRET > /tmp/encrypted_data_bag_secret
+      - |
+        # check we got downloads correctly <<< this still needs to be resolved
+        echo "validator.pem"
+        cat /tmp/${CHEF_ORG}-validator.pem
+        echo "db secret"
+        cat /tmp/encrypted_data_bag_secret
+      - |
+        # validate packer json
+        echo "Validating ${SVR_TYPE}.json"
+        ./bin/packer validate packer/${SVR_TYPE}.json
+  build:
+    commands:
+      - APP_VER=$(echo $(echo $BUILD_VER | sed s/'Build_Release_'/''/) | sed s/'.zip'/''/)
+      - export APP_VER=$APP_VER
+      - echo "Building HashiCorp Packer template, ${SVR_TYPE}.json"
+      - ./bin/packer build -color=false packer/${SVR_TYPE}.json | tee build.log
+  post_build:
+    commands:
+      - echo "HashiCorp Packer build completed on `date`"
+      - egrep "${AWS_REGION}\:\sami\-" build.log | cut -d' ' -f2 > ami_id.txt
+      # Packer doesn't return non-zero status; we must do that if Packer build failed
+      - test -s ami_id.txt || exit 1
+      - export AMI_ID=$(cat ami_id.txt)
+      - |
+        # Update tfvars files & userdata
+        cd env
+        # for WKSPC in $(ls *.tfvars | sed s/.tfvars/''/) << this works but falls over for P01 
+        # because of "eu-central-1" and making specific replaements based on "eu-west-1"
+        for WKSPC in d202 t201
+        do
+          # Work out which ASG should be updated i.e. which is the old/inactive/off ASG
+          DES_BLU=$(echo $(cat ${WKSPC}.tfvars | grep "${CHEF_ROLE}-des_blu") | sed s/"${CHEF_ROLE}-des_blu = "/''/)
+          DES_GRN=$(echo $(cat ${WKSPC}.tfvars | grep "${CHEF_ROLE}-des_grn") | sed s/"${CHEF_ROLE}-des_grn = "/''/)
+          if [ $DES_BLU = $DES_GRN -o $DES_BLU -eq $DES_GRN ]; then 
+            echo "error calculating oldest ASG"; exit 1
+          elif [ $DES_GRN -eq "0" -o $DES_GRN = 0 ]; then
+            OFF="grn"
+            ON="blu"
+            DES_ON=$DES_BLU
+          else 
+            OFF="blu"
+            ON="grn"
+            DES_ON=$DES_GRN	
+          fi
+          echo "on = $ON"
+          echo "off = $OFF"
+          echo "desired = $DES_ON"
+          # Change the desired number of instances on the old/inactive/off ASG to >=1
+          # Change the desired number of instances on the current/active/on ASG to 0
+          echo "Change desired instance count"
+          sed -i "s/${CHEF_ROLE}-des_${OFF} = 0/${CHEF_ROLE}-des_${OFF} = ${DES_ON}/g" ${WKSPC}.tfvars
+          # Shutting down the fall back instances is a manual task
+          # sed -i "s/${CHEF_ROLE}-des_${ON} = ${DES_ON}/${CHEF_ROLE}-des_${ON} = 0/g;" ${WKSPC}.tfvars
+
+          # Update the AMI id of the old/inactive/off ASG
+          echo "Update AMI id"
+          AMI_ID_OFF=$(cat ${WKSPC}.tfvars | grep ${CHEF_ROLE}-ami_${OFF})
+          sed -i "s/${AMI_ID_OFF}/${CHEF_ROLE}-ami_${OFF} = {type = \"map\" eu-west-1 = \"${AMI_ID}\"}/g;" ${WKSPC}.tfvars
+
+          # Update the App Version tag of the old/inactive/off ASG
+          echo "Update App Version"
+          APP_VER_OFF=$(cat ${WKSPC}.tfvars | grep app_version_web_${OFF})
+          sed -i "s/${APP_VER_OFF}/app_version_web_${OFF} = \"${APP_VER}\"/g;" ${WKSPC}.tfvars
+
+          # Update the DNS weighting to switch from old to new
+          echo "Update DNS Weighting"
+          sed -i "s/www_dns_weight_${OFF} = 0/www_dns_weight_${OFF} = 100/g" ${WKSPC}.tfvars
+          sed -i "s/www_dns_weight_${ON} = 0/www_dns_weight_${ON} = 0/g" ${WKSPC}.tfvars
+        done
+        # Update userdata for demo purposes
+        # cd ../files
+        # USERDATA_BUILD=$(cat userdata_asg_${OFF}.ps1 | grep -o '"20.*"')
+        # USERDATA_AMI_ID=$(cat userdata_asg_${OFF}.ps1 | grep -o '"ami-.*"')
+        # sed -i "s@${USERDATA_AMI_ID}@\"$AMI_ID\"@g;" userdata_asg_${OFF}.ps1
+        # sed -i "s@${USERDATA_BUILD}@\"$APP_VER\"@g;" userdata_asg_${OFF}.ps1
+        # cat ../env/d66.tfvars
+        # cat userdata_asg_${OFF}.ps1
+      - | 
+        # Commit to git
+        # cd ..
+        echo $SSH_KEY > /home/temp_ssh_key
+        export GIT_SSH_COMMAND="ssh -i /home/temp_ssh_key"
+        git config --global user.email "rb-auto@rb-org.com"
+        git config --global user.name "rb-auto"
+        git checkout -b "${CHEF_ROLE}-${APP_VER}"
+        #git add files/userdata*
+        git add env/*.tfvars
+        # git status
+        git commit -a -m "Update ASG ${CHEF_ROLE}" -m "Created $AMI_ID in $AWS_REGION with build ver $APP_VER"
+        git push -v https://${AUTO_USER}:${GH_TOKEN}@github.com/${REPO} ${CHEF_ROLE}-${APP_VER}
+artifacts:
+  files:
+    - ami_id.txt
+    - build.log
+  discard-paths: yes
