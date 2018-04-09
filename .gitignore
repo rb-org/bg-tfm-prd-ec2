@@ -4,3 +4,7 @@
 
 # Module directory
 .terraform/
+
+env/secret\.tfvars
+
+\.DS_Store

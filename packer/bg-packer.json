@@ -1,0 +1,85 @@
+{
+  "variables": {
+    "vpc": "{{env `BUILD_VPC_ID`}}",
+    "subnet": "{{env `BUILD_SUBNET_ID`}}",
+    "aws_region": "{{env `AWS_REGION`}}",
+    "aws_accounts": "{{env `AWS_ACCOUNTS`}}",
+    "aws_regions": "{{ env `AWS_REGIONS`}}",
+    "chef_env": "{{ env `CHEF_ENV`}}",
+    "chef_role": "{{ env `CHEF_ROLE`}}",
+    "chef_org": "{{ env `CHEF_ORG`}}",
+    "chef_svr": "{{ env `CHEF_SVR`}}",
+    "ec2_profile": "{{ env `EC2_PROFILE`}}",
+    "sec_group": "{{ env `SG_PCKR`}}",
+    "app_ver": "{{ env `APP_VER`}}",
+    "ami_name": "{{env `CHEF_ROLE`}}-{{env `APP_VER`}}"
+  },
+  "builders": [{
+    "name": "AMI Builder - Base",
+    "type": "amazon-ebs",
+    "communicator": "winrm",
+    "winrm_username": "Administrator",
+    "user_data_file": "packer/files/user_data.ps1",
+    "region": "{{user `aws_region`}}",
+    "ami_users": ["{{user `aws_accounts`}}"],
+    "iam_instance_profile": "{{user `ec2_profile`}}",
+    "source_ami_filter": {
+        "filters": {
+            "virtualization-type": "hvm",
+            "name": "Windows_Server-2016-English-Full-Base*",
+            "root-device-type": "ebs"
+        },
+        "owners": ["801119661308"],
+        "most_recent": true
+    },
+    "instance_type": "t2.large",
+    "ami_name": "{{user `ami_name` | clean_ami_name}}",
+    "tags": {
+      "Name": "{{user `ami_name`}}",
+      "App_Version": "{{user `app_ver`}}",
+      "OS": "Windows 2016",
+      "Built_By": "Packer",
+      "Built": "{{isotime \"20060102-150405\"}}"
+    },
+    "run_tags": { 
+      "Name": "{{user `ami_name`}}"
+    },
+    "run_volume_tags": {
+      "Name": "{{user `ami_name`}}"
+    },
+    "snapshot_tags": {
+      "Name": "{{user `ami_name`}}"
+    },
+    "ami_description": "Windows 2016 Base AMI built with Packer and Chef",
+    "associate_public_ip_address": "true",
+    "vpc_id": "{{user `vpc`}}",
+    "subnet_id": "{{user `subnet`}}",
+    "security_group_id": "{{user `sec_group`}}"
+  }],
+  "provisioners": [
+    {
+      "type": "chef-client",
+      "server_url": "https://{{ user `chef_svr`}}/organizations/{{user `chef_org`}}",
+      "encrypted_data_bag_secret_path": "/tmp/encrypted_data_bag_secret",
+      "chef_environment": "{{user `chef_env`}}",
+      "guest_os_type": "windows",
+      "run_list": [
+        "role[{{user `chef_role`}}]"
+      ],
+      "ssl_verify_mode": "verify_none",
+      "validation_client_name": "{{user `chef_org`}}-validator",
+      "validation_key_path": "/tmp/{{user `chef_org`}}-validator.pem",
+      "skip_clean_client": false,
+      "skip_clean_node": false,
+      "install_command": "powershell.exe -Command \"(New-Object System.Net.WebClient).DownloadFile('http://chef.io/chef/install.msi', 'C:\\Windows\\Temp\\chef.msi');Start-Process 'msiexec' -ArgumentList '/qb /i C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait\""
+    },
+    {
+      "type": "powershell",
+      "inline": [". C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule"]
+    },
+    {
+      "type": "powershell",
+      "inline": [". C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"]
+    }
+  ]
+}
