@@ -10,9 +10,9 @@ data "aws_region" "current" {}
 # ALB Web server 
 
 module "alb_web_blu" {
-  source = "terraform-aws-modules/alb/aws"
+  source  = "terraform-aws-modules/alb/aws"
+  version = "2.5.0"
 
-  #version = "2.4.0"
   #source = "git@github.com:rb-org/terraform-aws-alb"
 
   alb_name                         = "${var.name_prefix}-${terraform.workspace}-alb-web-blu"
@@ -61,9 +61,9 @@ resource "aws_route53_record" "blu" {
 }
 
 module "alb_web_grn" {
-  source = "terraform-aws-modules/alb/aws"
+  source  = "terraform-aws-modules/alb/aws"
+  version = "2.5.0"
 
-  #version = "2.4.0"
   #source = "git@github.com:rb-org/terraform-aws-alb"
 
   alb_name                         = "${var.name_prefix}-${terraform.workspace}-alb-web-grn"
