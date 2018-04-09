@@ -19,6 +19,7 @@ Module for EC2 instances, ASG & ALB
 | Purpose | Repo |
 |---|---|
 | Common Resources | https://github.com/rb-org/bg-tfm-common |
-| Base networking | https://github.com/rb-org/bg-tfm-prd-base |
+| Base Networking | https://github.com/rb-org/bg-tfm-prd-base |
 | EC2 Instances | https://github.com/rb-org/bg-tfm-prd-ec2 |
 | AMI Build pipeline | https://github.com/rb-org/bg-tfm-ami-pipeline |
+| Global Resources | | https://github.com/rb-org/bg-tfm-global |
