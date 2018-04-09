@@ -82,9 +82,12 @@ jobs:
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
-          name: plan
+          name: update_tfvars
           command: |
-            terraform plan -var-file=env/${WKSPC}.tfvars -var acc_id=${acc_id} -var cert_domain=${cert_domain} -no-color -out=plans/tfm.plan
+            echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
+            echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
+            echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+      - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
   dev_plan:
     docker:
       - image: hashicorp/terraform:light
@@ -102,9 +105,12 @@ jobs:
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
-          name: plan
+          name: update_tfvars
           command: |
-            terraform plan -var-file=env/${WKSPC}.tfvars -var acc_id=${acc_id} -var cert_domain=${cert_domain} -no-color -out=plans/tfm.plan
+            echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
+            echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
+            echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+      - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans
           paths:
@@ -176,9 +182,12 @@ jobs:
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
-          name: plan
+          name: update_tfvars
           command: |
-            terraform plan -var-file=env/${WKSPC}.tfvars -var acc_id=${acc_id} -var cert_domain=${cert_domain} -no-color -input=false -out=plans/tfm.plan
+            echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
+            echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
+            echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+      - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
   uat_plan:
     docker:
       - image: hashicorp/terraform:light
@@ -191,9 +200,12 @@ jobs:
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
-          name: plan
+          name: update_tfvars
           command: |
-            terraform plan -var-file=env/${WKSPC}.tfvars -var acc_id=${acc_id} -var cert_domain=${cert_domain} -no-color -input=false -out=plans/tfm.plan
+            echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
+            echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
+            echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+      - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans
           paths:
@@ -261,9 +273,12 @@ jobs:
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
-          name: plan
+          name: update_tfvars
           command: |
-            terraform plan -var-file=env/${WKSPC}.tfvars -var acc_id=${acc_id} -var cert_domain=${cert_domain} -no-color -input=false -out=plans/tfm.plan
+            echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
+            echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
+            echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+      - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
   prd_plan:
     docker:
       - image: hashicorp/terraform:light
@@ -276,9 +291,12 @@ jobs:
       - run: terraform init -input=false
       - run: terraform workspace select $WKSPC
       - run: 
-          name: plan
+          name: update_tfvars
           command: |
-            terraform plan -var-file=env/${WKSPC}.tfvars -var acc_id=${acc_id} -var cert_domain=${cert_domain} -no-color -input=false -out=plans/tfm.plan
+            echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
+            echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
+            echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
+      - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans
           paths:
