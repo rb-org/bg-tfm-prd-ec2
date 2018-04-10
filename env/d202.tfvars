@@ -18,13 +18,13 @@ key_name = {
 # It's important the ami_blu and ami_grn maps are not spread over multiple lines
 
 bg-web-ws-ami_blu = {type = "map" eu-west-1 = "ami-05bf9f0c19ba9ddda"}
-bg-web-ws-ami_grn = {type = "map" eu-west-1 = "ami-0e04e0b1a9547125a"}
+bg-web-ws-ami_grn = {type = "map" eu-west-1 = "ami-056a8c2256bc641b0"}
 
 bg-web-ws-des_blu = 1
-bg-web-ws-des_grn = 0
+bg-web-ws-des_grn = 1
 
 app_version_web_blu = "20180409.09"
-app_version_web_grn = "20180319.03"
+app_version_web_grn = "20180409.11"
 
-www_dns_weight_blu = 100
-www_dns_weight_grn = 0
+www_dns_weight_blu = 0
+www_dns_weight_grn = 100
