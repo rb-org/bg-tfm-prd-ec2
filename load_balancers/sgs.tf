@@ -47,13 +47,3 @@ module "r53_health_checks_sg" {
     )
   }"
 }
-
-resource "aws_security_group_rule" "allow_r53_checks" {
-  type                     = "ingress"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  security_group_id        = "${module.alb_web_sg.this_security_group_id}"
-  source_security_group_id = "${module.r53_health_checks_sg.this_security_group_id}"
-  description              = "Route 53 Health Checkers"
-}

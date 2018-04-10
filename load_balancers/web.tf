@@ -49,7 +49,7 @@ module "alb_web_grn" {
   version = "2.5.0"
 
   alb_name                         = "${var.name_prefix}-${terraform.workspace}-alb-web-grn"
-  alb_security_groups              = ["${module.alb_web_sg.this_security_group_id}"]
+  alb_security_groups              = ["${module.alb_web_sg.this_security_group_id}", "${module.r53_health_checks_sg.this_security_group_id}"]
   certificate_arn                  = "${data.aws_acm_certificate.wildcard.arn}"
   health_check_path                = "/"
   subnets                          = ["${var.public_subnet_ids}"]
