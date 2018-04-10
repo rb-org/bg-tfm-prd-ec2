@@ -101,7 +101,7 @@ phases:
           # Change the desired number of instances on the old/inactive/off ASG to >=1
           # Change the desired number of instances on the current/active/on ASG to 0
           echo "Change desired instance count"
-          sed -i "s/${CHEF_ROLE}-des_${OFF} = 0/${CHEF_ROLE}-des_${OFF} = ${DES_ON}/g" ${WKSPC}.tfvars
+          sed -i "s/${CHEF_ROLE}-des_${OFF} = 0/${CHEF_ROLE}-des_${OFF} = ${DES_ON}/g;" ${WKSPC}.tfvars
           # Shutting down the fall back instances is a manual task
           # sed -i "s/${CHEF_ROLE}-des_${ON} = ${DES_ON}/${CHEF_ROLE}-des_${ON} = 0/g;" ${WKSPC}.tfvars
 
@@ -117,8 +117,8 @@ phases:
 
           # Update the DNS weighting to switch from old to new
           echo "Update DNS Weighting"
-          sed -i "s/www_dns_weight_${OFF} = 0/www_dns_weight_${OFF} = 100/g" ${WKSPC}.tfvars
-          sed -i "s/www_dns_weight_${ON} = 100/www_dns_weight_${ON} = 0/g" ${WKSPC}.tfvars
+          # sed -i "s/www_dns_weight_${OFF} = 0/www_dns_weight_${OFF} = 100/g;" ${WKSPC}.tfvars
+          # sed -i "s/www_dns_weight_${ON} = 100/www_dns_weight_${ON} = 0/g;" ${WKSPC}.tfvars
         done
         # Update userdata for demo purposes
         # cd ../files
