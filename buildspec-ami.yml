@@ -15,7 +15,10 @@ env:
     REPO_SSH: "rb-auto@github.com:rb-org/bg-tfm-prd-ec2.git"
     REPO: "rb-org/bg-tfm-prd-ec2.git"
     AUTO_USER: "rb-auto"
+    CCI_USERNAME: "rb-org"
+    CCI_PROJECT: "bg-tfm-prd-ec2"
   parameter-store:
+    CCI_TOKEN: "/circleci/api_token"
     SSH_KEY: "/github/rb-org/automation/ssh_key"
     GH_TOKEN: "/github/rb-org/automation/access_token"
     ACCESS_KEY: "/cdb/user/access_key"
@@ -69,86 +72,17 @@ phases:
       - ./bin/packer build -color=false packer/${SVR_TYPE}.json | tee build.log
   post_build:
     commands:
-      - echo "HashiCorp Packer build completed on `date`"
-      - egrep "${AWS_REGION}\:\sami\-" build.log | cut -d' ' -f2 > ami_id.txt
-      # Packer doesn't return non-zero status; we must do that if Packer build failed
-      - test -s ami_id.txt || exit 1
-      - export AMI_ID=$(cat ami_id.txt)
       - |
-        # Update tfvars files & userdata
-        cd env
-        # for WKSPC in $(ls *.tfvars | sed s/.tfvars/''/) << this works but falls over for P01 
-        # because of "eu-central-1" and making specific replaements based on "eu-west-1"
-        for WKSPC in d202 t201
-        do
-          # Work out which ASG should be updated i.e. which is the old/inactive/off ASG
-          DES_BLU=$(echo $(cat ${WKSPC}.tfvars | grep "${CHEF_ROLE}-des_blu") | sed s/"${CHEF_ROLE}-des_blu = "/''/)
-          DES_GRN=$(echo $(cat ${WKSPC}.tfvars | grep "${CHEF_ROLE}-des_grn") | sed s/"${CHEF_ROLE}-des_grn = "/''/)
-          if [ $DES_BLU = $DES_GRN -o $DES_BLU -eq $DES_GRN ]; then 
-            echo "error calculating oldest ASG"; exit 1
-          elif [ $DES_GRN -eq "0" -o $DES_GRN = 0 ]; then
-            OFF="grn"
-            ON="blu"
-            DES_ON=$DES_BLU
-          else 
-            OFF="blu"
-            ON="grn"
-            DES_ON=$DES_GRN	
-          fi
-          echo "on = $ON"
-          echo "off = $OFF"
-          echo "desired = $DES_ON"
-          # Change the desired number of instances on the old/inactive/off ASG to >=1
-          # Change the desired number of instances on the current/active/on ASG to 0
-          echo "Change desired instance count"
-          sed -i "s/${CHEF_ROLE}-des_${OFF} = 0/${CHEF_ROLE}-des_${OFF} = ${DES_ON}/g;" ${WKSPC}.tfvars
+        echo "HashiCorp Packer build completed on `date`"
+        egrep "${AWS_REGION}\:\sami\-" build.log | cut -d' ' -f2 > ami_id.txt
+        # Packer doesn't return non-zero status; we must do that if Packer build failed
+        test -s ami_id.txt || exit 1
+        export AMI_ID=$(cat ami_id.txt)
+      - |
+        # Update AMI ID & App Version Env Vars in CircleCI
+        curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"latest_ami_id", "value":"${AMI_ID}"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+        curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"latest_app_ver", "value":"${APP_VER}"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
-          echo "Chef role = ${CHEF_ROLE}"
-          # Shutting down the fall back instances is a manual task
-          # sed -i "s/${CHEF_ROLE}-des_${ON} = ${DES_ON}/${CHEF_ROLE}-des_${ON} = 0/g;" ${WKSPC}.tfvars
-
-          # Update the AMI id of the old/inactive/off ASG
-          echo "Update AMI id"
-          AMI_ID_OFF=$(cat ${WKSPC}.tfvars | grep ${CHEF_ROLE}-ami_${OFF})
-          sed -i "s/${AMI_ID_OFF}/${CHEF_ROLE}-ami_${OFF} = {type = \"map\" eu-west-1 = \"${AMI_ID}\"}/g;" ${WKSPC}.tfvars
-
-          echo "ami id off = $AMI_ID_OFF"
-          echo "ami id = $AMI_ID"
-
-          # Update the App Version tag of the old/inactive/off ASG
-          echo "Update App Version"
-          APP_VER_OFF=$(cat ${WKSPC}.tfvars | grep app_version_web_${OFF})
-          sed -i "s/${APP_VER_OFF}/app_version_web_${OFF} = \"${APP_VER}\"/g;" ${WKSPC}.tfvars
-
-          echo "App ver off = $APP_VER_OFF"
-          echo "app ver = $APP_VER"
-
-          # Update the DNS weighting to switch from old to new
-          echo "Update DNS Weighting"
-          sed -i "s/www_dns_weight_${OFF} = 0/www_dns_weight_${OFF} = 100/g;" ${WKSPC}.tfvars
-          sed -i "s/www_dns_weight_${ON} = 100/www_dns_weight_${ON} = 0/g;" ${WKSPC}.tfvars
-        done
-        # Update userdata for demo purposes
-        # cd ../files
-        # USERDATA_BUILD=$(cat userdata_asg_${OFF}.ps1 | grep -o '"20.*"')
-        # USERDATA_AMI_ID=$(cat userdata_asg_${OFF}.ps1 | grep -o '"ami-.*"')
-        # sed -i "s@${USERDATA_AMI_ID}@\"$AMI_ID\"@g;" userdata_asg_${OFF}.ps1
-        # sed -i "s@${USERDATA_BUILD}@\"$APP_VER\"@g;" userdata_asg_${OFF}.ps1
-        # cat ../env/d66.tfvars
-        # cat userdata_asg_${OFF}.ps1
-      - | 
-        # Commit to git
-        # cd ..
-        echo $SSH_KEY > /home/temp_ssh_key
-        export GIT_SSH_COMMAND="ssh -i /home/temp_ssh_key"
-        git config --global user.email "rb-auto@rb-org.com"
-        git config --global user.name "rb-auto"
-        git checkout -b "${CHEF_ROLE}-${APP_VER}"
-        #git add files/userdata*
-        git add env/*.tfvars
-        # git status
-        git commit -a -m "Update ASG ${CHEF_ROLE}" -m "Created $AMI_ID in $AWS_REGION with build ver $APP_VER"
-        git push -v https://${AUTO_USER}:${GH_TOKEN}@github.com/${REPO} ${CHEF_ROLE}-${APP_VER}
 artifacts:
   files:
     - ami_id.txt
