@@ -27,7 +27,7 @@ if [ ws_color_last_dev == "\"grn\"" -o ws_color_last_dev -eq "\"grn\"" ]; then
 
     echo -e "bg-web-ws = \"blu\""
 
-    cat .circleci/d202.tfvars
+    cat env/d202.tfvars
     echo $CCI_TOKEN
     echo $CCI_USERNAME
     echo $CCI_PROJECT
@@ -50,7 +50,7 @@ else
 
     echo -e "bg-web-ws = \"grn\""
 
-    cat .circleci/d202.tfvars
+    cat env/d202.tfvars
     echo $CCI_TOKEN
     echo $CCI_USERNAME
     echo $CCI_PROJECT
