@@ -16,17 +16,17 @@ jobs:
       - run: 
           name: lint-validate
           command: |
-            .circleci/lint.sh
+            chmod + x .circleci/lint.sh
+            chmod + x .circleci/validate.sh
+            circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
           command: |
-            echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
-            echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
-            echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
-            echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
+            chmod +x .circleci/switch_${WKSPC}.sh
+            .circleci/switch_${WKSPC}.sh
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
   dev_plan:
     docker:
@@ -44,17 +44,17 @@ jobs:
       - run: 
           name: lint-validate
           command: |
-            .circleci/lint.sh
+            chmod + x .circleci/lint.sh
+            chmod + x .circleci/validate.sh
+            circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
           command: |
-            echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
-            echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
-            echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
-            echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
+            chmod +x .circleci/switch_${WKSPC}.sh
+            .circleci/switch_${WKSPC}.sh
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans

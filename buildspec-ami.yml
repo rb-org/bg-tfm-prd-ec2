@@ -80,9 +80,8 @@ phases:
         export AMI_ID=$(cat ami_id.txt)
       - |
         # Update AMI ID & App Version Env Vars in CircleCI
-        curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"latest_ami_id", "value":"'$AMI_ID'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
-        curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"latest_app_ver", "value":"'$APP_VER'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
-
+        curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_ami_id_latest_dev", "value":"'$AMI_ID'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+        curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_app_ver_latest_dev", "value":"'$APP_VER'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 artifacts:
   files:
     - ami_id.txt
