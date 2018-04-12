@@ -18,7 +18,7 @@ jobs:
           command: |
             chmod +x .circleci/lint.sh
             chmod +x .circleci/validate.sh
-            circleci/lint.sh
+            .circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform workspace select $WKSPC
@@ -46,7 +46,7 @@ jobs:
           command: |
             chmod +x .circleci/lint.sh
             chmod +x .circleci/validate.sh
-            circleci/lint.sh
+            .circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform workspace select $WKSPC
