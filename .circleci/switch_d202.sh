@@ -27,6 +27,11 @@ if [ ws_color_last_dev == "\"grn\"" -o ws_color_last_dev -eq "\"grn\"" ]; then
 
     echo -e "bg-web-ws = \"blu\""
 
+    cat .circle/d202.tfvars
+    echo $CCI_TOKEN
+    echo $CCI_USERNAME
+    echo $CCI_PROJECT
+
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
 else
@@ -44,6 +49,11 @@ else
     echo -e "www_dns_weight_blu = 0" | tee -a env/${WKSPC}.tfvars
 
     echo -e "bg-web-ws = \"grn\""
+
+    cat .circle/d202.tfvars
+    echo $CCI_TOKEN
+    echo $CCI_USERNAME
+    echo $CCI_PROJECT
 
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
