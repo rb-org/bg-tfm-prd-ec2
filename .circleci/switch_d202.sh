@@ -1,11 +1,14 @@
 # /bin/sh
 
 # We need to update the tfvars file with some environment variables from CircleCI
-echo -e \n | tee -a env/${WKSPC}.tfvars
+echo -e  | tee -a env/${WKSPC}.tfvars
 echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
 echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
 echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
 echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
+
+CCI_USERNAME=$CIRCLE_PROJECT_REPONAME
+CCI_PROJECT=$CIRCLE_PROJECT_USERNAME
 
 # AppVer and AMI Id vars have just been updated. We need to use these on the color that was previously secondary ASG
 # ws_color_last_dev tells us which color is currently in primary ASG
