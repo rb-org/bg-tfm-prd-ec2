@@ -1,7 +1,7 @@
 # /bin/sh
 
 # We need to update the tfvars file with some environment variables from CircleCI
-
+echo -e \n | tee -a env/${WKSPC}.tfvars
 echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
 echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
 echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
