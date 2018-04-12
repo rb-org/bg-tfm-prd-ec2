@@ -13,14 +13,14 @@ echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
 
 if [ ws_color_last_dev == "grn" -o ws_color_last_dev -eq "grn" ]; then
 
-    echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = ${ws_ami_id_latest_dev}}" | tee -a env/${WKSPC}.tfvars
-    echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = ${ws_ami_id_last_dev}}" | tee -a env/${WKSPC}.tfvars
+    echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
+    echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/${WKSPC}.tfvars
 
     echo -e "bg-web-ws-des_blu = 1" | tee -a env/${WKSPC}.tfvars
     echo -e "bg-web-ws-des_grn = 1" | tee -a env/${WKSPC}.tfvars
 
-    echo -e "app_version_web_blu = ${ws_app_ver_latest_dev}" | tee -a env/${WKSPC}.tfvars
-    echo -e "app_version_web_grn = ${ws_app_ver_last_dev}" | tee -a env/${WKSPC}.tfvars
+    echo -e "app_version_web_blu = \"${ws_app_ver_latest_dev}\""| tee -a env/${WKSPC}.tfvars
+    echo -e "app_version_web_grn = \"${ws_app_ver_last_dev}\"" | tee -a env/${WKSPC}.tfvars
 
     echo -e "www_dns_weight_blu = 100" | tee -a env/${WKSPC}.tfvars
     echo -e "www_dns_weight_grn = 0" | tee -a env/${WKSPC}.tfvars
@@ -31,14 +31,14 @@ if [ ws_color_last_dev == "grn" -o ws_color_last_dev -eq "grn" ]; then
 
 else
 
-    echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = ${ws_ami_id_latest_dev}}" | tee -a env/${WKSPC}.tfvars
-    echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = ${ws_ami_id_last_dev}}" | tee -a env/${WKSPC}.tfvars
+    echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
+    echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/${WKSPC}.tfvars
 
     echo -e "bg-web-ws-des_grn = 1" | tee -a env/${WKSPC}.tfvars
     echo -e "bg-web-ws-des_blu = 1" | tee -a env/${WKSPC}.tfvars
 
-    echo -e "app_version_web_grn = ${ws_app_ver_latest_dev}" | tee -a env/${WKSPC}.tfvars
-    echo -e "app_version_web_blu = ${ws_app_ver_last_dev}" | tee -a env/${WKSPC}.tfvars
+    echo -e "app_version_web_grn = \"${ws_app_ver_latest_dev}\"" | tee -a env/${WKSPC}.tfvars
+    echo -e "app_version_web_blu = \"${ws_app_ver_last_dev}\"" | tee -a env/${WKSPC}.tfvars
 
     echo -e "www_dns_weight_grn = 100" | tee -a env/${WKSPC}.tfvars
     echo -e "www_dns_weight_blu = 0" | tee -a env/${WKSPC}.tfvars
