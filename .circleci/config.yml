@@ -5,6 +5,7 @@ jobs:
       - image: hashicorp/terraform:light
     environment: 
       - WKSPC: "d202"
+      - RUN_WS_PLAN: "true"
     steps:
       - add_ssh_keys
       - checkout
@@ -16,23 +17,24 @@ jobs:
       - run: 
           name: lint-validate
           command: |
-            chmod + x .circleci/lint.sh
-            chmod + x .circleci/validate.sh
-            circleci/lint.sh
+            chmod +x .circleci/lint.sh
+            chmod +x .circleci/validate.sh
+            .circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
           command: |
-            chmod +x .circleci/switch_${WKSPC}.sh
-            .circleci/switch_${WKSPC}.sh
+            chmod +x .circleci/switch_ws.sh
+            .circleci/switch_ws.sh
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
   dev_plan:
     docker:
       - image: hashicorp/terraform:light
     environment: 
       - WKSPC: "d202"
+      - RUN_WS_PLAN: "true"
     steps:
       - add_ssh_keys
       - checkout
@@ -44,17 +46,17 @@ jobs:
       - run: 
           name: lint-validate
           command: |
-            chmod + x .circleci/lint.sh
-            chmod + x .circleci/validate.sh
-            circleci/lint.sh
+            chmod +x .circleci/lint.sh
+            chmod +x .circleci/validate.sh
+            .circleci/lint.sh
             .circleci/validate.sh
       - run: mkdir -p plans
       - run: terraform workspace select $WKSPC
       - run: 
           name: update_tfvars
           command: |
-            chmod +x .circleci/switch_${WKSPC}.sh
-            .circleci/switch_${WKSPC}.sh
+            chmod +x .circleci/switch_ws.sh
+            .circleci/switch_ws.sh
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans
@@ -65,6 +67,7 @@ jobs:
       - image: hashicorp/terraform:light
     environment: 
       - WKSPC: "d202"
+      - RUN_WS_APPLY: "true"
     steps:
       - add_ssh_keys
       - checkout
