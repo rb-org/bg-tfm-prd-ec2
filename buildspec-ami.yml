@@ -39,7 +39,7 @@ phases:
       - |
         # Install hub
         curl -qL -o /tmp/hub.tgz https://github.com/github/hub/releases/download/v2.2.9/hub-linux-amd64-2.2.9.tgz
-        tar -zxf /tmp/hub.tgz
+        tar -zvxf /tmp/hub.tgz
         ls /tmp -l
         ls /tmp/hub*/bin -l
         ./tmp/hub*/bin/hub version
