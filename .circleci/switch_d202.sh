@@ -7,8 +7,8 @@ echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
 echo -e "cert_domain = ${cert_domain}" | tee -a env/${WKSPC}.tfvars
 echo -e "zone_id = ${zone_id}" | tee -a env/${WKSPC}.tfvars
 
-CCI_USERNAME=$CIRCLE_PROJECT_REPONAME
-CCI_PROJECT=$CIRCLE_PROJECT_USERNAME
+CCI_PROJECT=$CIRCLE_PROJECT_REPONAME
+CCI_USERNAME=$CIRCLE_PROJECT_USERNAME
 
 # AppVer and AMI Id vars have just been updated. We need to use these on the color that was previously secondary ASG
 # ws_color_last_dev tells us which color is currently in primary ASG
@@ -32,8 +32,8 @@ if [ $ws_color_last_dev == "\"grn\"" ]; then
 
     cat env/d202.tfvars
     echo $CCI_TOKEN
-    echo $CCI_USERNAME
-    echo $CCI_PROJECT
+    echo "Username: $CCI_USERNAME"
+    echo "Project:  $CCI_PROJECT"
 
     curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
@@ -56,8 +56,8 @@ else
 
     cat env/d202.tfvars
     echo $CCI_TOKEN
-    echo $CCI_USERNAME
-    echo $CCI_PROJECT
+    echo "Username: $CCI_USERNAME"
+    echo "Project:  $CCI_PROJECT"
 
     curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
