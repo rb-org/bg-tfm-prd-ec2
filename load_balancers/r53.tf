@@ -68,7 +68,7 @@ resource "aws_route53_record" "www_blu" {
 
   set_identifier  = "blu"
   records         = ["ws-blu.${var.cert_domain}"]
-  health_check_id = "${aws_route53_health_check.blu.health_check_id}"
+  health_check_id = "${aws_route53_health_check.blu.id}"
 }
 
 resource "aws_route53_record" "www_grn" {
@@ -83,5 +83,5 @@ resource "aws_route53_record" "www_grn" {
 
   set_identifier  = "grn"
   records         = ["ws-grn.${var.cert_domain}"]
-  health_check_id = "${aws_route53_health_check.grn.health_check_id}"
+  health_check_id = "${aws_route53_health_check.grn.id}"
 }
