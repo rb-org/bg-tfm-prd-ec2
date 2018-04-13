@@ -85,8 +85,9 @@ ws_apply(){
     # Update last vars so we know what was deployed in primary ASG
     echo "------------------------------------"
     echo "Updating env var ws_ami_id_last_dev"
-    echo "Updating env var ws_app_ver_last_dev"
     curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_ami_id_last_dev", "value":"'$ws_ami_id_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+
+    echo "Updating env var ws_app_ver_last_dev"
     curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_app_ver_last_dev", "value":"'$ws_app_ver_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
     
 }
