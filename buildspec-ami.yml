@@ -44,9 +44,9 @@ phases:
         ls -l
         echo "ls /tmp"
         ls /tmp -l
-        echo "ls /tmp/hub"
-        ls /tmp/hub* -l
-        ./tmp/hub*/bin/hub version
+        echo "ls /tmp/hub-linux-amd64-2.2.9"
+        ls /tmp/hub-linux-amd64-2.2.9 -l
+        ./tmp/hub-linux-amd64-2.2.9/bin/hub version
       - |
         # Get Chef validator pem and encrypted secrets hash <<  not working properly for validator pem - line feeds
         echo "Pulling down Chef validator..."
