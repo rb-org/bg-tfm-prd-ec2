@@ -14,7 +14,7 @@ CCI_PROJECT=$CIRCLE_PROJECT_USERNAME
 # ws_color_last_dev tells us which color is currently in primary ASG
 # 
 
-if [ $ws_color_last_dev == "\"grn\"" -o $ws_color_last_dev -eq "\"grn\"" ]; then
+if [ $ws_color_last_dev == "\"grn\"" ]; then
 
     echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
     echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/${WKSPC}.tfvars
