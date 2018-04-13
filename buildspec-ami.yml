@@ -40,9 +40,12 @@ phases:
         # Install hub
         curl -qL -o /tmp/hub.tgz https://github.com/github/hub/releases/download/v2.2.9/hub-linux-amd64-2.2.9.tgz
         tar -zvxf /tmp/hub.tgz -C /tmp
+        echo "ls root"
         ls -l
+        echo "ls /tmp"
         ls /tmp -l
-        ls /tmp/hub*/bin -l
+        echo "ls /tmp/hub"
+        ls /tmp/hub* -l
         ./tmp/hub*/bin/hub version
       - |
         # Get Chef validator pem and encrypted secrets hash <<  not working properly for validator pem - line feeds
