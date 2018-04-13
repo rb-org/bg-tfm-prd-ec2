@@ -89,16 +89,12 @@ ws_apply(){
     echo "Updating env var ws_app_ver_last_dev"
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_ami_id_last_dev", "value":"'$ws_ami_id_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_app_ver_last_dev", "value":"'$ws_app_ver_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
-
-    echo "------------------------------------"
-    cat env/${WKSPC}.tfvars
-    echo "------------------------------------"
     
 }
 
-if [ $RUN_WS_PLAN = "true" ]; then
+if [[ $RUN_WS_PLAN = "true" ]]; then
     ws_plan
-elif [ $RUN_WS_APPLY = "true" ]; then
+elif [[ $RUN_WS_APPLY = "true" ]]; then
     ws_apply
 else
     echo "Something went wrong"
