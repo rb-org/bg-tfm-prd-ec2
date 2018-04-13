@@ -17,7 +17,7 @@ ws_plan(){
 
     echo "Running ws_plan"
 
-    if [[ $ws_color_last_dev == *"grn"* ]]; then
+    if [[ $ws_color_last_dev = *"grn"* ]]; then
 
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
         echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/${WKSPC}.tfvars
@@ -60,7 +60,7 @@ ws_apply(){
 
     echo "Running ws_apply"
 
-    if [[ $ws_color_last_dev == *"grn"* ]]; then
+    if [[ $ws_color_last_dev = *"grn"* ]]; then
 
         #curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
         curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
