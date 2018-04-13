@@ -62,38 +62,10 @@ ws_apply(){
 
     if [ $ws_color_last_dev == "\"grn\"" ]; then
 
-        echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
-        echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/${WKSPC}.tfvars
-
-        echo -e "bg-web-ws-des_blu = 1" | tee -a env/${WKSPC}.tfvars
-        echo -e "bg-web-ws-des_grn = 1" | tee -a env/${WKSPC}.tfvars
-
-        echo -e "app_version_web_blu = \"${ws_app_ver_latest_dev}\""| tee -a env/${WKSPC}.tfvars
-        echo -e "app_version_web_grn = \"${ws_app_ver_last_dev}\"" | tee -a env/${WKSPC}.tfvars
-
-        echo -e "www_dns_weight_blu = 100" | tee -a env/${WKSPC}.tfvars
-        echo -e "www_dns_weight_grn = 0" | tee -a env/${WKSPC}.tfvars
-
-        echo -e "bg-web-ws = \"blu\"" | tee -a env/${WKSPC}.tfvars
-
         #curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
         curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
     else
-
-        echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
-        echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/${WKSPC}.tfvars
-
-        echo -e "bg-web-ws-des_grn = 1" | tee -a env/${WKSPC}.tfvars
-        echo -e "bg-web-ws-des_blu = 1" | tee -a env/${WKSPC}.tfvars
-
-        echo -e "app_version_web_grn = \"${ws_app_ver_latest_dev}\"" | tee -a env/${WKSPC}.tfvars
-        echo -e "app_version_web_blu = \"${ws_app_ver_last_dev}\"" | tee -a env/${WKSPC}.tfvars
-
-        echo -e "www_dns_weight_grn = 100" | tee -a env/${WKSPC}.tfvars
-        echo -e "www_dns_weight_blu = 0" | tee -a env/${WKSPC}.tfvars
-
-        echo -e "bg-web-ws = \"grn\"" | tee -a env/${WKSPC}.tfvars
 
         #curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
         curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
