@@ -35,7 +35,7 @@ if [ $ws_color_last_dev == "\"grn\"" ]; then
     echo "Username: $CCI_USERNAME"
     echo "Project:  $CCI_PROJECT"
 
-    curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
+    #curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
 else
@@ -59,13 +59,13 @@ else
     echo "Username: $CCI_USERNAME"
     echo "Project:  $CCI_PROJECT"
 
-    curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
+    #curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
 fi
 
 # Update last vars so we know what was deployed in primary ASG
-#curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_ami_id_last_dev", "value":"'$ws_ami_id_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
-#curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_app_ver_last_dev", "value":"'$ws_app_ver_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_ami_id_last_dev", "value":"'$ws_ami_id_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_app_ver_last_dev", "value":"'$ws_app_ver_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
 #curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_ami_id_latest_dev", "value":"'$AMI_ID'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar
