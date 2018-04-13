@@ -106,8 +106,8 @@ phases:
         git push -v https://${AUTO_USER}:${GH_TOKEN}@github.com/${REPO} ${CHEF_ROLE}-${APP_VER}
       - |
         # Create PR with hub
+        export GITHUB_TOKEN=$GH_TOKEN
         hub pull-request -f -m "New WS AMI for App Build $APP_VER"
-
 artifacts:
   files:
     - ami_id.txt
