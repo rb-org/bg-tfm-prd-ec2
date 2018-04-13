@@ -39,10 +39,8 @@ phases:
       - |
         # Install hub
         curl -qL -o /tmp/hub.tgz https://github.com/github/hub/releases/download/v2.2.9/hub-linux-amd64-2.2.9.tgz
-        tar -zvxf /tmp/hub.tgz -C /tmp
+        tar -zxf /tmp/hub.tgz -C /tmp
         PATH=$PATH:/tmp/hub-linux-amd64-2.2.9/bin
-        hub version
-
       - |
         # Get Chef validator pem and encrypted secrets hash <<  not working properly for validator pem - line feeds
         echo "Pulling down Chef validator..."
@@ -108,7 +106,7 @@ phases:
         git push -v https://${AUTO_USER}:${GH_TOKEN}@github.com/${REPO} ${CHEF_ROLE}-${APP_VER}
       - |
         # Create PR with hub
-        ./tmp/hub*/bin/hub pull-request -f -m "New WS AMI for App Build $APP_VER"
+        hub pull-request -f -m "New WS AMI for App Build $APP_VER"
 
 artifacts:
   files:
