@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # We need to update the tfvars file with some environment variables from CircleCI
 echo "------------------------------------"
