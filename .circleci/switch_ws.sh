@@ -22,7 +22,7 @@ ws_plan(){
 
     if [[ $ws_color_last_dev = *"grn"* ]]; then
 
-        echo "Updating Green"
+        echo "Updating Blue"
 
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
         echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -40,7 +40,7 @@ ws_plan(){
 
     else
 
-        echo "Updating Blue"
+        echo "Updating Green"
 
         echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -65,6 +65,7 @@ ws_plan(){
 
 ws_apply(){
 
+    echo "------------------------------------"
     echo "Running ws_apply"
 
     if [[ $ws_color_last_dev = *"grn"* ]]; then
