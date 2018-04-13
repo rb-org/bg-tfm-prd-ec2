@@ -89,8 +89,8 @@ phases:
         curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_app_ver_latest_dev", "value":"'$APP_VER'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
       - |
         # Update Readme.md. 
-        README_WS_AMI_ID=(cat README.md | grep -o "Latest WS AMI.*" |grep -o "ami-.*")
-        README_WS_APP_VER=(cat README.md | grep -o "Latest WS App.*" |grep -o "20.*")
+        README_WS_AMI_ID=$(cat README.md | grep -o "Latest WS AMI.*" |grep -o "ami-.*")
+        README_WS_APP_VER=$(cat README.md | grep -o "Latest WS App.*" |grep -o "20.*")
         sed -i "s@${README_WS_AMI_ID}@\"$AMI_ID\"@g;" README.md
         sed -i "s@${README_WS_APP_VER}@\"$APP_VER\"@g;" README.md
       - |
