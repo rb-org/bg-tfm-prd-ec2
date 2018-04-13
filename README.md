@@ -2,11 +2,14 @@
 
 Module for EC2 instances, ASG & ALB
 
-| Branch | App Ver | AMI Id | B/G | Build Status |
-|---|:---:|:---:|:---:|:---:|
-| dev | 20180409.17 | ami-03fe3a30f81b970fe | grn | [![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/dev.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/dev) |
-| uat | 20180409.11 | ami-056a8c2256bc641b0 | grn | [![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/uat.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/uat) |
-| master | 20171221.59 | ami-21eb9658 | blu | [![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/master.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/master) |
+| Branch |  Build Status |
+|---|:---:|
+| dev | [![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/dev.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/dev) |
+| uat |  [![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/uat.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/uat) |
+| master |  [![CircleCI](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/master.svg?style=svg&circle-token=a1de90a2598e69ab3787934bd9e8a50304e5f603)](https://circleci.com/gh/rb-org/bg-tfm-prd-ec2/tree/master) |
+
+Latest WS AMI Id: ami-06cce38b4ef0a0a0e
+Latest WS App Version: 20180409.19
 
 ## Terraform workspaces
 
