@@ -26,8 +26,8 @@ jobs:
       - run: 
           name: update_tfvars
           command: |
-            chmod +x .circleci/switch_${WKSPC}.sh
-            .circleci/switch_${WKSPC}.sh
+            chmod +x .circleci/switch_ws.sh
+            .circleci/switch_ws.sh
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
   dev_plan:
     docker:
@@ -55,8 +55,8 @@ jobs:
       - run: 
           name: update_tfvars
           command: |
-            chmod +x .circleci/switch_${WKSPC}.sh
-            .circleci/switch_${WKSPC}.sh
+            chmod +x .circleci/switch_ws.sh
+            .circleci/switch_ws.sh
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/tfm.plan
       - persist_to_workspace:
           root: plans

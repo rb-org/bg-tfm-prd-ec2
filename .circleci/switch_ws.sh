@@ -14,6 +14,9 @@ CCI_USERNAME=$CIRCLE_PROJECT_USERNAME
 # ws_color_last_dev tells us which color is currently in primary ASG
 
 ws_plan(){
+
+    echo "Running ws_plan"
+
     if [ $ws_color_last_dev == "\"grn\"" ]; then
 
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
@@ -48,10 +51,15 @@ ws_plan(){
 
     fi
 
+    cat env/${WKSPC}.tfvars
+
 }
 
 
 ws_apply(){
+
+    echo "Running ws_apply"
+
     if [ $ws_color_last_dev == "\"grn\"" ]; then
 
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
@@ -96,6 +104,8 @@ ws_apply(){
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_ami_id_last_dev", "value":"'$ws_ami_id_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_app_ver_last_dev", "value":"'$ws_app_ver_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
+    cat env/${WKSPC}.tfvars
+    
 }
 
 if [ $RUN_WS_PLAN = "true" ]; then
