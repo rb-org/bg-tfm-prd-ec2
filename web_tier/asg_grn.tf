@@ -24,7 +24,7 @@ module "asg_web_grn" {
   vpc_zone_identifier  = ["${var.private_subnets}"]
 
   // The health_check_type can be EC2 or ELB and defaults to ELB
-  health_check_type         = "EC2"
+  health_check_type         = "ELB"
   health_check_grace_period = 3000
   default_cooldown          = 3000
 
