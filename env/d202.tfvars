@@ -1,3 +1,5 @@
+# d202 tfvars
+
 region = "eu-west-1"
 
 vpc_cidr = "10.202.0.0/16"
@@ -10,6 +12,8 @@ key_name = {
   type      = "map"
   eu-west-1 = "xyz-bg-d202-euw"
 }
+
+#########################################
 
 // Web Tier
 
@@ -30,3 +34,5 @@ key_name = {
 # www_dns_weight_grn = 100
 
 # bg-web-ws = "grn"
+
+#########################################

@@ -1,6 +1,8 @@
 # /bin/sh
 
 # We need to update the tfvars file with some environment variables from CircleCI
+echo "------------------------------------"
+echo "Updating secrets"
 echo -e  | tee -a env/${WKSPC}.tfvars
 echo -e "acc_id = ${acc_id}" | tee -a env/${WKSPC}.tfvars
 echo -e "allowed_ips = ${allowed_ips}" | tee -a env/${WKSPC}.tfvars
@@ -15,9 +17,12 @@ CCI_USERNAME=$CIRCLE_PROJECT_USERNAME
 
 ws_plan(){
 
+    echo "------------------------------------"
     echo "Running ws_plan"
 
     if [[ $ws_color_last_dev = *"grn"* ]]; then
+
+        echo "Updating Green"
 
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
         echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/${WKSPC}.tfvars
@@ -35,6 +40,8 @@ ws_plan(){
 
     else
 
+        echo "Updating Blue"
+
         echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/${WKSPC}.tfvars
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_last_dev}\"}" | tee -a env/${WKSPC}.tfvars
 
@@ -50,8 +57,9 @@ ws_plan(){
         echo -e "bg-web-ws = \"grn\"" | tee -a env/${WKSPC}.tfvars
 
     fi
-
+    echo "------------------------------------"
     cat env/${WKSPC}.tfvars
+    echo "------------------------------------"
 
 }
 
@@ -62,21 +70,29 @@ ws_apply(){
 
     if [[ $ws_color_last_dev = *"grn"* ]]; then
 
+        echo "------------------------------------"
+        echo "Updating env var ws_color_last_dev = blu"
         #curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
         curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
     else
-
+        echo "------------------------------------"
+        echo "Updating ws_color_last_dev = grn"
         #curl -u ${CCI_TOKEN}: -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
         curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
     fi
 
     # Update last vars so we know what was deployed in primary ASG
+    echo "------------------------------------"
+    echo "Updating env var ws_ami_id_last_dev"
+    echo "Updating env var ws_app_ver_last_dev"
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_ami_id_last_dev", "value":"'$ws_ami_id_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
     curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_app_ver_last_dev", "value":"'$ws_app_ver_latest_dev'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
+    echo "------------------------------------"
     cat env/${WKSPC}.tfvars
+    echo "------------------------------------"
     
 }
 
