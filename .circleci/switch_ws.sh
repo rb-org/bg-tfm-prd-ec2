@@ -19,7 +19,7 @@ ws_plan(){
 
     echo "------------------------------------"
     echo "Running ws_plan"
-    if [[ $ws_running_color_dev = *"grn"* ]]; then
+    if [[ `echo $ws_running_color_dev |grep grn ` = "grn" ]]; then
         echo "Updating Blue"
 
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -35,7 +35,7 @@ ws_plan(){
         echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
 
         echo -e "bg-web-ws = \"blu\"" | tee -a env/"${WKSPC}".tfvars
-    elif [[ $ws_running_color_dev = *"blu"* ]]; then
+    elif [[ `echo $ws_running_color_dev |grep blu ` = "blu" ]]; then
         echo "Updating Green"
 
         echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -78,14 +78,14 @@ ws_apply(){
     echo "------------------------------------"
     echo "Running ws_apply"
 
-    if [[ $ws_running_color_dev = *"grn"* ]]; then
+    if [[ `echo $ws_running_color_dev |grep grn ` = "grn" ]]; then
         echo "------------------------------------"
-        echo "Updating env var ws_running_color_dev = blu"
+        echo "Updating env var ws_running_color_dev to blu"
         #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
         curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
-    elif [[ $ws_running_color_dev = *"blu"* ]]; then
+    elif [[ `echo $ws_running_color_dev |grep blu ` = "blu" ]]; then
         echo "------------------------------------"
-        echo "Updating ws_running_color_dev = grn"
+        echo "Updating env var ws_running_color_dev to grn"
         #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
         curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"grn"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
     else
