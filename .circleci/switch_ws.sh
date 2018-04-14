@@ -13,14 +13,14 @@ CCI_PROJECT=$CIRCLE_PROJECT_REPONAME
 CCI_USERNAME=$CIRCLE_PROJECT_USERNAME
 
 # AppVer and AMI Id vars have just been updated. We need to use these on the color that was previously secondary ASG
-# ws_color_last_dev tells us which color is currently in primary ASG
+# ws_running_color_dev tells us which color is currently in primary ASG
 
 ws_plan(){
 
     echo "------------------------------------"
     echo "Running ws_plan"
 
-    if [[ $ws_color_last_dev = *"grn"* ]]; then
+    if [[ $ws_running_color_dev = *"grn"* ]]; then
 
         echo "Updating Blue"
 
@@ -68,18 +68,18 @@ ws_apply(){
     echo "------------------------------------"
     echo "Running ws_apply"
 
-    if [[ $ws_color_last_dev = *"grn"* ]]; then
+    if [[ $ws_running_color_dev = *"grn"* ]]; then
 
         echo "------------------------------------"
-        echo "Updating env var ws_color_last_dev = blu"
-        #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
-        curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+        echo "Updating env var ws_running_color_dev = blu"
+        #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
+        curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
     else
         echo "------------------------------------"
-        echo "Updating ws_color_last_dev = grn"
-        #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_color_last_dev
-        curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_color_last_dev", "value":"grn"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+        echo "Updating ws_running_color_dev = grn"
+        #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
+        curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"grn"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
     fi
 
