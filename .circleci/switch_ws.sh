@@ -83,7 +83,7 @@ ws_apply(){
         echo "Updating env var ws_running_color_dev = blu"
         #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
         curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
-    elif
+    elif [[ $ws_running_color_dev = *"blu"* ]]; then
         echo "------------------------------------"
         echo "Updating ws_running_color_dev = grn"
         #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
