@@ -114,7 +114,6 @@ ws_apply_asg(){
         echo "Running Color: ${ws_running_color_dev}"
         exit 1
     fi
-    fi
 
     # Update last vars so we know what was deployed in primary ASG
     echo "------------------------------------"
