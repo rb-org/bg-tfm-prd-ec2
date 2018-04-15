@@ -37,7 +37,7 @@ ws_plan_asg(){
         echo -e "bg-web-ws = \"blu\"" | tee -a env/"${WKSPC}".tfvars
 
         terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan 
-        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -var 'www_dns_weight_blu = 100' -var 'www_dns_weight_grn = 0' -out=plans/dns_tfm.plan 
+        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -var "www_dns_weight_blu = 100" -var "www_dns_weight_grn = 0" -out=plans/dns_tfm.plan 
 
     elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
         echo "Updating Green"
@@ -57,7 +57,7 @@ ws_plan_asg(){
         echo -e "bg-web-ws = \"grn\"" | tee -a env/"${WKSPC}".tfvars   
 
         terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan 
-        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -var 'www_dns_weight_blu = 0' -var 'www_dns_weight_grn = 100'  -out=plans/dns_tfm.plan 
+        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -var "www_dns_weight_blu = 0" -var "www_dns_weight_grn = 100"  -out=plans/dns_tfm.plan 
 
     else 
         echo "Something went wrong"
