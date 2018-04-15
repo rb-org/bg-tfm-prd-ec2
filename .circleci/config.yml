@@ -296,10 +296,10 @@ workflows:
                 - master
                 - uat
       - dev_hold:
-        type: approval
-        requires:
-          - dev_apply_asg
-        filters:
+          type: approval
+          requires:
+            - dev_apply_asg
+          filters:
           branches:
             only: dev
               ignore: 
