@@ -31,17 +31,18 @@ ws_plan_asg(){
         echo -e "app_version_web_blu = \"${ws_app_ver_latest_dev}\""| tee -a env/"${WKSPC}".tfvars
         echo -e "app_version_web_grn = \"${ws_app_ver_running_dev}\"" | tee -a env/"${WKSPC}".tfvars
 
-        echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}".tfvars
-        echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}".tfvars
-
         echo -e "bg-web-ws = \"blu\"" | tee -a env/"${WKSPC}".tfvars
 
         cp env/"${WKSPC}".tfvars env/"${WKSPC}_dns".tfvars
 
+        echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}".tfvars
+        echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}".tfvars
+
+        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan 
+
         echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}_dns".tfvars
         echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}_dns".tfvars
 
-        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan 
         terraform plan -var-file=env/${WKSPC}_dns.tfvars -no-color -input=false -out=plans/dns_tfm.plan 
 
     elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
@@ -56,19 +57,20 @@ ws_plan_asg(){
         echo -e "app_version_web_grn = \"${ws_app_ver_latest_dev}\"" | tee -a env/"${WKSPC}".tfvars
         echo -e "app_version_web_blu = \"${ws_app_ver_running_dev}\"" | tee -a env/"${WKSPC}".tfvars
 
-        echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
-        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars
-
         echo -e "bg-web-ws = \"grn\"" | tee -a env/"${WKSPC}".tfvars   
 
         cp env/"${WKSPC}".tfvars env/"${WKSPC}_dns".tfvars
-        
-        echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}".tfvars
-        echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}".tfvars
+
+        echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
+        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars
 
         terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan 
-        terraform plan -var-file=env/${WKSPC}_dns.tfvars -no-color -input=false -out=plans/dns_tfm.plan 
         
+        echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}_dns".tfvars
+        echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}_dns".tfvars
+        
+        terraform plan -var-file=env/${WKSPC}_dns.tfvars -no-color -input=false -out=plans/dns_tfm.plan 
+
     else 
         echo "Something went wrong"
         echo "------------------------------------"
@@ -87,6 +89,7 @@ ws_plan_asg(){
     fi
     echo "------------------------------------"
     cat env/"${WKSPC}".tfvars
+    cat env/"${WKSPC}_dns".tfvars
     echo "------------------------------------"
 
 }
@@ -112,6 +115,11 @@ ws_apply_asg(){
         echo "${WKSPC}.tfvars"
         echo
         cat env/"${WKSPC}".tfvars
+        echo "------------------------------------"
+        echo "------------------------------------"
+        echo "${WKSPC}_dns.tfvars"
+        echo
+        cat env/"${WKSPC}_dns".tfvars
         echo "------------------------------------"
         echo "CircleCI Env Vars"
         echo
