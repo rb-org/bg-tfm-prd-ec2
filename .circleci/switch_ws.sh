@@ -19,7 +19,7 @@ ws_plan(){
 
     echo "------------------------------------"
     echo "Running ws_plan"
-    if [[ `echo $ws_running_color_dev |grep grn ` = "grn" ]]; then
+    if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
         echo "Updating Blue"
 
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -35,7 +35,7 @@ ws_plan(){
         echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
 
         echo -e "bg-web-ws = \"blu\"" | tee -a env/"${WKSPC}".tfvars
-    elif [[ `echo $ws_running_color_dev |grep blu ` = "blu" ]]; then
+    elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
         echo "Updating Green"
 
         echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -64,7 +64,7 @@ ws_plan(){
         echo "Running AMI Id: ${ws_ami_id_running_dev}"
         echo "Latest App Ver: ${ws_app_ver_latest_dev}"
         echo "Running App Ver: ${ws_app_ver_running_dev}"
-        echo "Running Color: $ws_running_color_dev"
+        echo "Running Color: "$ws_running_color_dev""
         exit 1
     fi
     echo "------------------------------------"
@@ -78,12 +78,12 @@ ws_apply(){
     echo "------------------------------------"
     echo "Running ws_apply"
 
-    if [[ `echo $ws_running_color_dev |grep grn ` = "grn" ]]; then
+    if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
         echo "------------------------------------"
         echo "Updating env var ws_running_color_dev to blu"
         #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
         curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
-    elif [[ `echo $ws_running_color_dev |grep blu ` = "blu" ]]; then
+    elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
         echo "------------------------------------"
         echo "Updating env var ws_running_color_dev to grn"
         #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
