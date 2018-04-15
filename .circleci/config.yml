@@ -296,6 +296,7 @@ workflows:
                 - master
                 - uat
       - dev_hold_dns:
+          type: approval
           requires: 
             - dev_apply_asg
           filters: 
