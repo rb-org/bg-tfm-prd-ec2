@@ -130,9 +130,9 @@ ws_apply_dns() {
     # to the updated ASG. The ws_running_color_dev var now points to the ASG we want to push traffic to.
 
     if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
-        terraform apply -no-color -input=false -auto-approve plans/asg_tfm.plan -var 'www_dns_weight_blu = 0' -var 'www_dns_weight_grn = 100'
+        terraform apply -var 'www_dns_weight_blu = 0' -var 'www_dns_weight_grn = 100' -no-color -input=false -auto-approve plans/asg_tfm.plan 
     elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
-        terraform apply -no-color -input=false -auto-approve plans/asg_tfm.plan -var 'www_dns_weight_blu = 100' -var 'www_dns_weight_grn = 0'
+        terraform apply -var 'www_dns_weight_blu = 100' -var 'www_dns_weight_grn = 0' -no-color -input=false -auto-approve plans/asg_tfm.plan 
     else 
         echo "Something went wrong"
         echo "------------------------------------"
