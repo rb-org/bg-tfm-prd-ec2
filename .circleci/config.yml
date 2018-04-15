@@ -295,9 +295,12 @@ workflows:
               ignore: 
                 - master
                 - uat
-      - dev_apply_dns:
+      - dev_hold_dns:
           requires: 
             - dev_apply_asg
+      - dev_apply_dns:
+          requires: 
+            - dev_hold_dns
           filters: 
             branches:
               only: dev
