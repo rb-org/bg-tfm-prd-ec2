@@ -298,6 +298,12 @@ workflows:
       - dev_hold_dns:
           requires: 
             - dev_apply_asg
+          filters: 
+            branches:
+              only: dev
+              ignore: 
+                - master
+                - uat
       - dev_apply_dns:
           requires: 
             - dev_hold_dns
