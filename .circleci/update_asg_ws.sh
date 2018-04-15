@@ -64,7 +64,7 @@ ws_plan_asg(){
         echo "Running AMI Id: ${ws_ami_id_running_dev}"
         echo "Latest App Ver: ${ws_app_ver_latest_dev}"
         echo "Running App Ver: ${ws_app_ver_running_dev}"
-        echo "Running Color: "$ws_running_color_dev""
+        echo "Running Color: ${ws_running_color_dev}"
         exit 1
     fi
     echo "------------------------------------"
