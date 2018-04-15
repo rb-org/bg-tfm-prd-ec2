@@ -107,12 +107,7 @@ jobs:
             chmod +x .circleci/update_dns_ws.sh
             .circleci/update_dns_ws.sh
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/dns_tfm.plan
-      - persist_to_workspace:
-          root: plans
-          paths:
-            - asg_tfm.plan
-      - attach_workspace:
-          at: plans
+
       - run: terraform apply -no-color -input=false -auto-approve plans/dns_tfm.plan
   dev2uat_plan:
     docker:
