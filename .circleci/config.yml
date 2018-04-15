@@ -297,7 +297,7 @@ workflows:
                 - uat
       - dev_apply_dns:
           requires: 
-            - dev_hold
+            - dev_apply_asg
           filters: 
             branches:
               only: dev
