@@ -61,7 +61,7 @@ jobs:
       - persist_to_workspace:
           root: plans
           paths:
-            - tfm.plan
+            - asg_tfm.plan
   dev_apply_asg:
     docker:
       - image: hashicorp/terraform:light
@@ -107,6 +107,10 @@ jobs:
             chmod +x .circleci/update_dns_ws.sh
             .circleci/update_dns_ws.sh
       - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/dns_tfm.plan
+      - persist_to_workspace:
+          root: plans
+          paths:
+            - asg_tfm.plan
       - attach_workspace:
           at: plans
       - run: terraform apply -no-color -input=false -auto-approve plans/dns_tfm.plan
