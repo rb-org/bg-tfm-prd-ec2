@@ -60,6 +60,7 @@ jobs:
           root: plans
           paths:
             - asg_tfm.plan
+            - dns_tfm.plan
   dev_apply_asg:
     docker:
       - image: hashicorp/terraform:light
@@ -83,6 +84,7 @@ jobs:
           command: |
             chmod +x .circleci/update_asg_ws.1.sh
             .circleci/update_asg_ws.1.sh
+      - run: terraform apply -no-color -input=false -auto-approve plans/asg_tfm.plan
   dev_apply_dns:
     docker:
       - image: hashicorp/terraform:light
@@ -106,6 +108,8 @@ jobs:
           command: |
             chmod +x .circleci/update_asg_ws.1.sh
             .circleci/update_asg_ws.1.sh
+      - run: terraform apply -no-color -input=false -auto-approve plans/dns_tfm.plan
+      
   dev2uat_plan:
     docker:
       - image: hashicorp/terraform:light

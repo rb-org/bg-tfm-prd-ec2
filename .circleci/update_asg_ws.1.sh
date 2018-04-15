@@ -37,6 +37,7 @@ ws_plan_asg(){
         echo -e "bg-web-ws = \"blu\"" | tee -a env/"${WKSPC}".tfvars
 
         terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan 
+        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -var 'www_dns_weight_blu = 100' -var 'www_dns_weight_grn = 0' -out=plans/dns_tfm.plan 
 
     elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
         echo "Updating Green"
@@ -56,6 +57,7 @@ ws_plan_asg(){
         echo -e "bg-web-ws = \"grn\"" | tee -a env/"${WKSPC}".tfvars   
 
         terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan 
+        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -var 'www_dns_weight_blu = 0' -var 'www_dns_weight_grn = 100'  -out=plans/dns_tfm.plan 
 
     else 
         echo "Something went wrong"
@@ -89,14 +91,10 @@ ws_apply_asg(){
         echo "Updating env var ws_running_color_dev to blu"
         curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
-        terraform apply -no-color -input=false -auto-approve plans/asg_tfm.plan 
-
     elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
         echo "------------------------------------"
         echo "Updating env var ws_running_color_dev to grn"
         curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"grn"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
-   
-        terraform apply -no-color -input=false -auto-approve plans/asg_tfm.plan
 
     else 
         echo "Something went wrong"
@@ -125,39 +123,10 @@ ws_apply_asg(){
     
 }
 
-ws_apply_dns() {
-    # All the env vars have been updated. The ASG has also been updated, now we just need to switch the DNS weight so that it points
-    # to the updated ASG. The ws_running_color_dev var now points to the ASG we want to push traffic to.
-
-    if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
-        terraform apply -var 'www_dns_weight_blu = 0' -var 'www_dns_weight_grn = 100' -no-color -input=false -auto-approve plans/asg_tfm.plan 
-    elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
-        terraform apply -var 'www_dns_weight_blu = 100' -var 'www_dns_weight_grn = 0' -no-color -input=false -auto-approve plans/asg_tfm.plan 
-    else 
-        echo "Something went wrong"
-        echo "------------------------------------"
-        echo "${WKSPC}.tfvars"
-        echo
-        cat env/"${WKSPC}".tfvars
-        echo "------------------------------------"
-        echo "CircleCI Env Vars"
-        echo
-        echo "Latest AMI Id: ${ws_ami_id_latest_dev}"
-        echo "Running AMI Id: ${ws_ami_id_running_dev}"
-        echo "Latest App Ver: ${ws_app_ver_latest_dev}"
-        echo "Running App Ver: ${ws_app_ver_running_dev}"
-        echo "Running Color: ${ws_running_color_dev}"
-        exit 1
-    fi
-}
-
-
 if [[ "$RUN_WS_PLAN" = "true" ]]; then
     ws_plan_asg
 elif [[ "$RUN_WS_APPLY" = "true" ]]; then
     ws_apply_asg
-elif [[ "$RUN_WS_DNS_APPLY" = "true" ]]; then
-    ws_apply_dns
 else
     echo "Something went wrong"
     exit 1
