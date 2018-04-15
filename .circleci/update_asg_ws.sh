@@ -15,10 +15,10 @@ CCI_USERNAME=$CIRCLE_PROJECT_USERNAME
 # AppVer and AMI Id vars have just been updated. We need to use these on the color that was previously secondary ASG
 # ws_running_color_dev tells us which color is currently in primary ASG
 
-ws_plan(){
+ws_plan_asg(){
 
     echo "------------------------------------"
-    echo "Running ws_plan"
+    echo "Running ws_plan_asg"
     if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
         echo "Updating Blue"
 
@@ -31,8 +31,8 @@ ws_plan(){
         echo -e "app_version_web_blu = \"${ws_app_ver_latest_dev}\""| tee -a env/"${WKSPC}".tfvars
         echo -e "app_version_web_grn = \"${ws_app_ver_running_dev}\"" | tee -a env/"${WKSPC}".tfvars
 
-        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars
-        echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
+        echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}".tfvars
+        echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}".tfvars
 
         echo -e "bg-web-ws = \"blu\"" | tee -a env/"${WKSPC}".tfvars
     elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
@@ -47,8 +47,8 @@ ws_plan(){
         echo -e "app_version_web_grn = \"${ws_app_ver_latest_dev}\"" | tee -a env/"${WKSPC}".tfvars
         echo -e "app_version_web_blu = \"${ws_app_ver_running_dev}\"" | tee -a env/"${WKSPC}".tfvars
 
-        echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}".tfvars
-        echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}".tfvars
+        echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
+        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars
 
         echo -e "bg-web-ws = \"grn\"" | tee -a env/"${WKSPC}".tfvars   
     else 
@@ -73,10 +73,10 @@ ws_plan(){
 
 }
 
-ws_apply(){
+ws_apply_asg(){
 
     echo "------------------------------------"
-    echo "Running ws_apply"
+    echo "Running ws_apply_asg"
 
     if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
         echo "------------------------------------"
@@ -107,9 +107,9 @@ ws_apply(){
 }
 
 if [[ "$RUN_WS_PLAN" = "true" ]]; then
-    ws_plan
+    ws_plan_asg
 elif [[ "$RUN_WS_APPLY" = "true" ]]; then
-    ws_apply
+    ws_apply_asg
 else
     echo "Something went wrong"
     exit 1
