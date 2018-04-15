@@ -26,7 +26,7 @@ jobs:
       - run: 
           name: update_tfvars
           command: |
-            chmod +x .circleci/update_asg_ws.sh
+            chmod +x .circleci/update_asg_ws.1.sh
             .circleci/update_asg_ws.1.sh
   dev_plan:
     docker:
@@ -54,7 +54,7 @@ jobs:
       - run: 
           name: update_tfvars
           command: |
-            chmod +x .circleci/update_asg_ws.sh
+            chmod +x .circleci/update_asg_ws.1.sh
             .circleci/update_asg_ws.1.sh
       - persist_to_workspace:
           root: plans
