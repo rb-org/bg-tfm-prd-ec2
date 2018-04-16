@@ -8,6 +8,7 @@ echo -e "acc_id = ${acc_id}" | tee -a env/"${WKSPC}".tfvars
 echo -e "allowed_ips = ${allowed_ips}" | tee -a env/"${WKSPC}".tfvars
 echo -e "cert_domain = ${cert_domain}" | tee -a env/"${WKSPC}".tfvars
 echo -e "zone_id = ${zone_id}" | tee -a env/"${WKSPC}".tfvars
+echo
 
 CCI_PROJECT=$CIRCLE_PROJECT_REPONAME
 CCI_USERNAME=$CIRCLE_PROJECT_USERNAME
@@ -20,6 +21,7 @@ ws_plan_asg(){
     echo "------------------------------------"
     echo "Running ws_plan_asg"
     if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
+
         echo "Updating Blue"
 
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -31,11 +33,13 @@ ws_plan_asg(){
         echo -e "app_version_web_blu = \"${ws_app_ver_latest_dev}\""| tee -a env/"${WKSPC}".tfvars
         echo -e "app_version_web_grn = \"${ws_app_ver_running_dev}\"" | tee -a env/"${WKSPC}".tfvars
 
+        echo -e "bg-web-ws = \"blu\"" | tee -a env/"${WKSPC}".tfvars
+
         echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}".tfvars
         echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}".tfvars
 
-        echo -e "bg-web-ws = \"blu\"" | tee -a env/"${WKSPC}".tfvars
     elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
+
         echo "Updating Green"
 
         echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -47,30 +51,22 @@ ws_plan_asg(){
         echo -e "app_version_web_grn = \"${ws_app_ver_latest_dev}\"" | tee -a env/"${WKSPC}".tfvars
         echo -e "app_version_web_blu = \"${ws_app_ver_running_dev}\"" | tee -a env/"${WKSPC}".tfvars
 
-        echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
-        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars
-
         echo -e "bg-web-ws = \"grn\"" | tee -a env/"${WKSPC}".tfvars   
-    else 
-        echo "Something went wrong"
-        echo "------------------------------------"
-        echo "${WKSPC}.tfvars"
-        echo
-        cat env/"${WKSPC}".tfvars
-        echo "------------------------------------"
-        echo "CircleCI Env Vars"
-        echo
-        echo "Latest AMI Id: ${ws_ami_id_latest_dev}"
-        echo "Running AMI Id: ${ws_ami_id_running_dev}"
-        echo "Latest App Ver: ${ws_app_ver_latest_dev}"
-        echo "Running App Ver: ${ws_app_ver_running_dev}"
-        echo "Running Color: ${ws_running_color_dev}"
-        exit 1
-    fi
-    echo "------------------------------------"
-    cat env/"${WKSPC}".tfvars
-    echo "------------------------------------"
 
+        echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
+        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars        
+
+    else 
+        error_out
+    fi
+
+    echo
+    echo "------------------------------------"
+    echo "tfvars for updating ASG"
+    echo
+    cat env/"${WKSPC}".tfvars
+    echo
+    
 }
 
 ws_apply_asg(){
@@ -81,19 +77,15 @@ ws_apply_asg(){
     if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
         echo "------------------------------------"
         echo "Updating env var ws_running_color_dev to blu"
-        #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
         curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"blu"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+
     elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
         echo "------------------------------------"
         echo "Updating env var ws_running_color_dev to grn"
-        #curl -u "${CCI_TOKEN}": -X DELETE https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar/ws_running_color_dev
         curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"grn"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
-    else
-        echo "Something went wrong"
-        echo "------------------------------------"
-        cat env/"${WKSPC}".tfvars
-        echo "------------------------------------"
-        exit 1
+
+    else 
+        error_out
     fi
 
     # Update last vars so we know what was deployed in primary ASG
@@ -106,11 +98,32 @@ ws_apply_asg(){
     
 }
 
+error_out(){
+    echo "Something went wrong"
+    echo "------------------------------------"
+    echo "${WKSPC}.tfvars"
+    echo
+    cat env/"${WKSPC}".tfvars
+    echo "------------------------------------"
+    echo
+    echo "CircleCI Env Vars"
+    echo
+    echo "Latest AMI Id: ${ws_ami_id_latest_dev}"
+    echo "Running AMI Id: ${ws_ami_id_running_dev}"
+    echo "Latest App Ver: ${ws_app_ver_latest_dev}"
+    echo "Running App Ver: ${ws_app_ver_running_dev}"
+    echo "Running Color: ${ws_running_color_dev}"
+    echo "------------------------------------"
+
+    exit 1
+}
+
 if [[ "$RUN_WS_PLAN" = "true" ]]; then
     ws_plan_asg
 elif [[ "$RUN_WS_APPLY" = "true" ]]; then
     ws_apply_asg
 else
-    echo "Something went wrong"
-    exit 1
+    error_out
 fi
+
+

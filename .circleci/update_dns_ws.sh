@@ -1,11 +1,6 @@
 #!/bin/bash
 
-#zone_id="Z3PQKC4SYPDQPC"
-#cert_domain="xyzexcp.nl"
-
-#REGION='eu-west-1'
 new_zone_id=$(echo ${zone_id} | sed "s/\"//g;")
-#ws_running_color_dev='grn'
 new_cert_domain=$(echo ${cert_domain} | sed "s/\"//g;")
 
 ws_update_dns(){
