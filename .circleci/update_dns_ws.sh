@@ -80,3 +80,4 @@ aws route53 change-resource-record-sets --hosted-zone-id ${zone_id} --cli-input-
 }
 
 
+ws_update_dns

@@ -88,20 +88,15 @@ jobs:
       - run: terraform apply -no-color -input=false -auto-approve plans/asg_tfm.plan
   dev_apply_dns:
     docker:
-      - image: ubuntu:xenial
+      - image: circleci/python:latest
     environment: 
       - WKSPC: "d202"
       - RUN_WS_DNS_APPLY: "true"
     steps:
       - add_ssh_keys
       - checkout
-      - run: 
-          name: install_aws_cli
-          command: |
-            apt update
-            apt-get install python python-pip -y
-            pip install --upgrade pip
-            pip install awscli
+      - run: sudo pip install awscli==1.14.17
+      - run: cd ./shared/images; ./refresh-tools-cache
       - run: 
           name: update_dns
           command: |
