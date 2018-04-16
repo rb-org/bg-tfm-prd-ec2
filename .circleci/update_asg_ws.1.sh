@@ -72,20 +72,7 @@ ws_plan_asg(){
         terraform plan -var-file=env/${WKSPC}_dns.tfvars -no-color -input=false -out=plans/dns_tfm.plan 
 
     else 
-        echo "Something went wrong"
-        echo "------------------------------------"
-        echo "${WKSPC}.tfvars"
-        echo
-        cat env/"${WKSPC}".tfvars
-        echo "------------------------------------"
-        echo "CircleCI Env Vars"
-        echo
-        echo "Latest AMI Id: ${ws_ami_id_latest_dev}"
-        echo "Running AMI Id: ${ws_ami_id_running_dev}"
-        echo "Latest App Ver: ${ws_app_ver_latest_dev}"
-        echo "Running App Ver: ${ws_app_ver_running_dev}"
-        echo "Running Color: ${ws_running_color_dev}"
-        exit 1
+        error_out
     fi
     echo "------------------------------------"
     cat env/"${WKSPC}".tfvars
@@ -110,25 +97,7 @@ ws_apply_asg(){
         curl -u "${CCI_TOKEN}": -X POST --header "Content-Type: application/json" -d '{"name":"ws_running_color_dev", "value":"grn"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
 
     else 
-        echo "Something went wrong"
-        echo "------------------------------------"
-        echo "${WKSPC}.tfvars"
-        echo
-        cat env/"${WKSPC}".tfvars
-        echo "------------------------------------"
-        echo "------------------------------------"
-        echo "${WKSPC}_dns.tfvars"
-        echo
-        cat env/"${WKSPC}_dns".tfvars
-        echo "------------------------------------"
-        echo "CircleCI Env Vars"
-        echo
-        echo "Latest AMI Id: ${ws_ami_id_latest_dev}"
-        echo "Running AMI Id: ${ws_ami_id_running_dev}"
-        echo "Latest App Ver: ${ws_app_ver_latest_dev}"
-        echo "Running App Ver: ${ws_app_ver_running_dev}"
-        echo "Running Color: ${ws_running_color_dev}"
-        exit 1
+        error_out
     fi
 
     # Update last vars so we know what was deployed in primary ASG
@@ -141,13 +110,42 @@ ws_apply_asg(){
     
 }
 
+ws_update_dns(){
+    # Env vars have already been updated. $ws_running_color_dev is now the color that should be primary
+    echo "------------------------------------"
+    echo "Updating DNS record weighting. Switch to $ws_running_color_dev"
+}
+
+error_out(){
+    echo "Something went wrong"
+    echo "------------------------------------"
+    echo "${WKSPC}.tfvars"
+    echo
+    cat env/"${WKSPC}".tfvars
+    echo "------------------------------------"
+    echo "------------------------------------"
+    echo "${WKSPC}_dns.tfvars"
+    echo
+    cat env/"${WKSPC}_dns".tfvars
+    echo "------------------------------------"
+    echo "CircleCI Env Vars"
+    echo
+    echo "Latest AMI Id: ${ws_ami_id_latest_dev}"
+    echo "Running AMI Id: ${ws_ami_id_running_dev}"
+    echo "Latest App Ver: ${ws_app_ver_latest_dev}"
+    echo "Running App Ver: ${ws_app_ver_running_dev}"
+    echo "Running Color: ${ws_running_color_dev}"
+    exit 1
+}
+
 if [[ "$RUN_WS_PLAN" = "true" ]]; then
     ws_plan_asg
 elif [[ "$RUN_WS_APPLY" = "true" ]]; then
     ws_apply_asg
+elif [[ "$RUN_WS_DNS_APPLY = "true ]]; then
+    ws_update_dns
 else
-    echo "Something went wrong"
-    exit 1
+    error_out
 fi
 
 
