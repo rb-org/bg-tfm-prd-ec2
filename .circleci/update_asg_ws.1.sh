@@ -20,6 +20,7 @@ ws_plan_asg(){
     echo "------------------------------------"
     echo "Running ws_plan_asg"
     if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
+
         echo "Updating Blue"
 
         echo -e "bg-web-ws-ami_blu = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -33,19 +34,16 @@ ws_plan_asg(){
 
         echo -e "bg-web-ws = \"blu\"" | tee -a env/"${WKSPC}".tfvars
 
-        cp env/"${WKSPC}".tfvars env/"${WKSPC}_dns".tfvars
+        echo "copy tfvars to workspace"
+        # We do this here so that we only have to update the dns weight vars later.
+        echo
+        cp env/"${WKSPC}".tfvars plans/"${WKSPC}".tfvars
 
         echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}".tfvars
         echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}".tfvars
 
-        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan 
-
-        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}_dns".tfvars
-        echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}_dns".tfvars
-
-        terraform plan -var-file=env/${WKSPC}_dns.tfvars -no-color -input=false -out=plans/dns_tfm.plan 
-
     elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
+
         echo "Updating Green"
 
         echo -e "bg-web-ws-ami_grn = {type = \"map\" eu-west-1 = \"${ws_ami_id_latest_dev}\"}" | tee -a env/"${WKSPC}".tfvars
@@ -59,26 +57,24 @@ ws_plan_asg(){
 
         echo -e "bg-web-ws = \"grn\"" | tee -a env/"${WKSPC}".tfvars   
 
-        cp env/"${WKSPC}".tfvars env/"${WKSPC}_dns".tfvars
+        echo "copy tfvars to workspace"
+        # We do this here so that we only have to update the dns weight vars later.
+        echo
+        cp env/"${WKSPC}".tfvars plans/"${WKSPC}".tfvars
 
         echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
-        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars
-
-        terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan 
-        
-        echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}_dns".tfvars
-        echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}_dns".tfvars
-        
-        terraform plan -var-file=env/${WKSPC}_dns.tfvars -no-color -input=false -out=plans/dns_tfm.plan 
+        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars        
 
     else 
         error_out
     fi
-    echo "------------------------------------"
-    cat env/"${WKSPC}".tfvars
-    cat env/"${WKSPC}_dns".tfvars
-    echo "------------------------------------"
 
+    echo "------------------------------------"
+    echo "tfvars for updating ASG"
+    echo
+    cat env/"${WKSPC}".tfvars
+    echo
+    
 }
 
 ws_apply_asg(){
@@ -114,6 +110,23 @@ ws_update_dns(){
     # Env vars have already been updated. $ws_running_color_dev is now the color that should be primary
     echo "------------------------------------"
     echo "Updating DNS record weighting. Switch to $ws_running_color_dev"
+
+    cp plans/"${WKSPC}".tfvars env/"${WKSPC}".tfvars
+
+    if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
+
+        echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}_dns".tfvars
+        echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}_dns".tfvars
+
+    elif [[ $(echo "$ws_running_color_dev" |grep blu) = "blu" ]]; then
+
+        echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars
+        echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
+
+    else 
+        error_out
+    fi
+        
 }
 
 error_out(){

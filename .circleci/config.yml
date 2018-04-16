@@ -56,11 +56,12 @@ jobs:
           command: |
             chmod +x .circleci/update_asg_ws.1.sh
             .circleci/update_asg_ws.1.sh
+      - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/asg_tfm.plan
       - persist_to_workspace:
           root: plans
           paths:
             - asg_tfm.plan
-            - dns_tfm.plan
+            - ${WKSPC}.tfvars
   dev_apply_asg:
     docker:
       - image: hashicorp/terraform:light
@@ -108,8 +109,8 @@ jobs:
           command: |
             chmod +x .circleci/update_asg_ws.1.sh
             .circleci/update_asg_ws.1.sh
+      - run: terraform plan -var-file=env/${WKSPC}.tfvars -no-color -input=false -out=plans/dns_tfm.plan
       - run: terraform apply -no-color -input=false -auto-approve plans/dns_tfm.plan
-      
   dev2uat_plan:
     docker:
       - image: hashicorp/terraform:light

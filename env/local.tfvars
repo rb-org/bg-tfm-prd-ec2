@@ -20,14 +20,16 @@ key_name = {
 # AMI id is likely to change depending on the environment/workspace
 # AMI id needs to map to a region. Becos we can't do map of maps AMI id is set here while instance type map is set in variables
 # It's important the ami_blu and ami_grn maps are not spread over multiple lines
-bg-web-ws-ami_blu = {type = "map" eu-west-1 = "ami-21eb9658"}
-bg-web-ws-ami_grn = {type = "map" eu-west-1 = "ami-21eb9658"}
+bg-web-ws-ami_blu = {type = "map" eu-west-1 = "ami-013df1af177fe6809"}
+bg-web-ws-ami_grn = {type = "map" eu-west-1 = "ami-04046c5278e375a49"}
 
-bg-web-ws-des_blu = 2
-bg-web-ws-des_grn = 0
+bg-web-ws-des_blu = 1
+bg-web-ws-des_grn = 1
 
-app_version_web_blu = "20171221.59"
-app_version_web_grn = "20171221.58"
+app_version_web_blu = "20180413.32"
+app_version_web_grn = "20180413.31"
 
-www_dns_weight_blu = 0
-www_dns_weight_grn = 100
+www_dns_weight_blu = 100
+www_dns_weight_grn = 0
+
+bg-web-ws = "blu"
