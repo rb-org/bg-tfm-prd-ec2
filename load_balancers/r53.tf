@@ -66,7 +66,7 @@ resource "aws_route53_record" "www_blu" {
     weight = "${var.www_dns_weight_blu}"
   }
 
-  set_identifier  = "blu"
+  set_identifier  = "www-blu"
   records         = ["ws-blu.${var.cert_domain}"]
   health_check_id = "${aws_route53_health_check.blu.id}"
 }
@@ -81,7 +81,7 @@ resource "aws_route53_record" "www_grn" {
     weight = "${var.www_dns_weight_grn}"
   }
 
-  set_identifier  = "grn"
+  set_identifier  = "www-grn"
   records         = ["ws-grn.${var.cert_domain}"]
   health_check_id = "${aws_route53_health_check.grn.id}"
 }

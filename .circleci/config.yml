@@ -95,7 +95,14 @@ jobs:
     steps:
       - add_ssh_keys
       - checkout
-    - run: 
+      - run: 
+          name: install_aws_cli
+          command: |
+            apt update
+            apt-get install python python-pip -y
+            pip install --upgrade pip
+            pip install awscli
+      - run: 
           name: update_dns
           command: |
             chmod +x .circleci/update_dns_ws.sh
