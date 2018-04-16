@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ws_update_dns(){
 
