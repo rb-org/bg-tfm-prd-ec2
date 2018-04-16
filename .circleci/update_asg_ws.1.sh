@@ -8,6 +8,7 @@ echo -e "acc_id = ${acc_id}" | tee -a env/"${WKSPC}".tfvars
 echo -e "allowed_ips = ${allowed_ips}" | tee -a env/"${WKSPC}".tfvars
 echo -e "cert_domain = ${cert_domain}" | tee -a env/"${WKSPC}".tfvars
 echo -e "zone_id = ${zone_id}" | tee -a env/"${WKSPC}".tfvars
+echo
 
 CCI_PROJECT=$CIRCLE_PROJECT_REPONAME
 CCI_USERNAME=$CIRCLE_PROJECT_USERNAME
@@ -38,6 +39,7 @@ ws_plan_asg(){
         # We do this here so that we only have to update the dns weight vars later.
         echo
         cp env/"${WKSPC}".tfvars plans/"${WKSPC}".tfvars
+        ls plans/
 
         echo -e "www_dns_weight_blu = 0" | tee -a env/"${WKSPC}".tfvars
         echo -e "www_dns_weight_grn = 100" | tee -a env/"${WKSPC}".tfvars
@@ -61,6 +63,7 @@ ws_plan_asg(){
         # We do this here so that we only have to update the dns weight vars later.
         echo
         cp env/"${WKSPC}".tfvars plans/"${WKSPC}".tfvars
+        ls plans/
 
         echo -e "www_dns_weight_grn = 0" | tee -a env/"${WKSPC}".tfvars
         echo -e "www_dns_weight_blu = 100" | tee -a env/"${WKSPC}".tfvars        
@@ -69,10 +72,14 @@ ws_plan_asg(){
         error_out
     fi
 
+    echo
     echo "------------------------------------"
     echo "tfvars for updating ASG"
     echo
     cat env/"${WKSPC}".tfvars
+    echo
+    echo "check tfvars copied to plans/"
+    cat plans/"${WKSPC}".tfvars
     echo
     
 }
