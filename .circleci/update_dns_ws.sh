@@ -1,9 +1,12 @@
 #!/bin/bash
 
+#zone_id="Z3PQKC4SYPDQPC"
+#cert_domain="xyzexcp.nl"
+
 #REGION='eu-west-1'
-zone_id='Z3PQKC4SYPDQPC'
+new_zone_id=$(echo ${zone_id} | sed "s/\"//g;")
 #ws_running_color_dev='grn'
-cert_domain='xyzexcp.nl'
+new_cert_domain=$(echo ${cert_domain} | sed "s/\"//g;")
 
 ws_update_dns(){
 
@@ -11,8 +14,8 @@ ws_update_dns(){
     echo "Running ws_plan_dns"
 
     REGION='eu-west-1'
-    RR_GRN_WWW_HC_ID=$(aws route53 list-resource-record-sets --region ${REGION} --hosted-zone-id ${zone_id} --query "ResourceRecordSets[?SetIdentifier == 'www-grn'].HealthCheckId" --output text )
-    RR_BLU_WWW_HC_ID=$(aws route53 list-resource-record-sets --region ${REGION} --hosted-zone-id ${zone_id} --query "ResourceRecordSets[?SetIdentifier == 'www-blu'].HealthCheckId" --output text )
+    RR_GRN_WWW_HC_ID=$(aws route53 list-resource-record-sets --region ${REGION} --hosted-zone-id ${new_zone_id} --query "ResourceRecordSets[?SetIdentifier == 'www-grn'].HealthCheckId" --output text )
+    RR_BLU_WWW_HC_ID=$(aws route53 list-resource-record-sets --region ${REGION} --hosted-zone-id ${new_zone_id} --query "ResourceRecordSets[?SetIdentifier == 'www-blu'].HealthCheckId" --output text )
 
 
     if [[ $(echo "$ws_running_color_dev" |grep grn) = "grn" ]]; then
@@ -49,14 +52,14 @@ ws_update_dns(){
             {
             \"Action\": \"UPSERT\",
             \"ResourceRecordSet\": {
-                \"Name\": \"www.${cert_domain}\",
+                \"Name\": \"www.${new_cert_domain}\",
                 \"Type\": \"CNAME\",
                 \"SetIdentifier\": \"www-blu\",
                 \"Weight\": ${WEIGHT_BLU},
                 \"TTL\": 5,
                 \"ResourceRecords\": [
                     {
-                        \"Value\": \"ws-blu.${cert_domain}\"
+                        \"Value\": \"ws-blu.${new_cert_domain}\"
                     }
                 ],
                 \"HealthCheckId\": \"${RR_BLU_WWW_HC_ID}\"
@@ -65,14 +68,14 @@ ws_update_dns(){
             {
             \"Action\": \"UPSERT\",
             \"ResourceRecordSet\": {
-            \"Name\": \"www.${cert_domain}\",
+            \"Name\": \"www.${new_cert_domain}\",
                 \"Type\": \"CNAME\",
                 \"SetIdentifier\": \"www-grn\",
                 \"Weight\": ${WEIGHT_GRN},
                 \"TTL\": 5,
                 \"ResourceRecords\": [
                     {
-                        \"Value\": \"ws-grn.${cert_domain}\"
+                        \"Value\": \"ws-grn.${new_cert_domain}\"
                     }
                 ],
                 \"HealthCheckId\": \"${RR_GRN_WWW_HC_ID}\"
@@ -83,7 +86,7 @@ ws_update_dns(){
 
     echo $RR_UPDATE
 
-    CHG_ID=$(aws route53 change-resource-record-sets --hosted-zone-id ${zone_id} --cli-input-json "${RR_UPDATE}" --query "ChangeInfo.Id" --output text)
+    CHG_ID=$(aws route53 change-resource-record-sets --hosted-zone-id ${new_zone_id} --cli-input-json "${RR_UPDATE}" --query "ChangeInfo.Id" --output text)
 
     sleep 10
     STATUS=$(aws route53 get-change --id ${CHG_ID} --query "ChangeInfo.Status" --output text)
