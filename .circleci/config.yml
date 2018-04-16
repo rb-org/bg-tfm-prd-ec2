@@ -95,8 +95,7 @@ jobs:
     steps:
       - add_ssh_keys
       - checkout
-      - run: sudo pip install awscli==1.14.17
-      - run: cd ./shared/images; ./refresh-tools-cache
+      - run: sudo pip install awscli
       - run: 
           name: update_dns
           command: |
