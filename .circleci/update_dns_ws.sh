@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#REGION='eu-west-1'
+#zone_id='Z3PQKC4SYPDQPC'
+#ws_running_color_dev='grn'
+#cert_domain='xyzexcp.nl'
+
 ws_update_dns(){
 
     echo "------------------------------------"
@@ -38,45 +43,57 @@ ws_update_dns(){
     echo "------------------------------------"
     echo "Making the Change"
 
-    RR_UPDATE="{ "ChangeBatch": { "Comment": "Stop routing traffic to blue",
-  "Changes": [
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "www.${cert_domain}",
-        "Type": "CNAME",
-        "SetIdentifier": "www-blu",
-        "Weight": ${WEIGHT_BLU}
-        "TTL": 5,
-        "ResourceRecords": [
-          {
-            "Value": "ws-blu.${cert_domain}"
-          }
-        ],
-        "HealthCheckId": "${RR_BLU_WWW_HC_ID}"
-      }
-    },
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "www.${cert_domain}",
-        "Type": "CNAME",
-        "SetIdentifier": "www-grn",
-        "Weight": ${WEIGHT_GRN}
-        "TTL": 5,
-        "ResourceRecords": [
-          {
-            "Value": "ws-grn.${cert_domain}"
-          }
-        ],
-        "HealthCheckId": "${RR_GRN_WWW_HC_ID}"
-      }
-    }
-  ] } }"
+    RR_UPDATE="{ \"ChangeBatch\": { 
+        \"Comment\": \"Stop routing traffic to blue\",
+        \"Changes\": [
+            {
+            \"Action\": \"UPSERT\",
+            \"ResourceRecordSet\": {
+                \"Name\": \"www.${cert_domain}\",
+                \"Type\": \"CNAME\",
+                \"SetIdentifier\": \"www-blu\",
+                \"Weight\": ${WEIGHT_BLU},
+                \"TTL\": 5,
+                \"ResourceRecords\": [
+                    {
+                        \"Value\": \"ws-blu.${cert_domain}\"
+                    }
+                ],
+                \"HealthCheckId\": \"${RR_BLU_WWW_HC_ID}\"
+                }
+            },
+            {
+            \"Action\": \"UPSERT\",
+            \"ResourceRecordSet\": {
+            \"Name\": \"www.${cert_domain}\",
+                \"Type\": \"CNAME\",
+                \"SetIdentifier\": \"www-grn\",
+                \"Weight\": ${WEIGHT_GRN},
+                \"TTL\": 5,
+                \"ResourceRecords\": [
+                    {
+                        \"Value\": \"ws-grn.${cert_domain}\"
+                    }
+                ],
+                \"HealthCheckId\": \"${RR_GRN_WWW_HC_ID}\"
+                }  
+            }
+        ] 
+    } }"
 
-aws route53 change-resource-record-sets --hosted-zone-id ${zone_id} --cli-input-json $RR_UPDATE
+    echo $RR_UPDATE
 
+    CHG_ID=$(aws route53 change-resource-record-sets --hosted-zone-id ${zone_id} --cli-input-json "${RR_UPDATE}" --query "ChangeInfo.Id" --output text)
 
+    sleep 10
+    STATUS=$(aws route53 get-change --id ${CHG_ID} --query "ChangeInfo.Status" --output text)
+
+    if [ ${STATUS} == "PENDING" ] || [ ${STATUS} == "INSYNC" ]; then
+        echo "Update status: ${STATUS}"
+    else
+        echo "Something went wrong"
+        exit 1
+    fi
 }
 
 
