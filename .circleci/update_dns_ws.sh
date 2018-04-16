@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #REGION='eu-west-1'
-#zone_id='Z3PQKC4SYPDQPC'
+zone_id='Z3PQKC4SYPDQPC'
 #ws_running_color_dev='grn'
-#cert_domain='xyzexcp.nl'
+cert_domain='xyzexcp.nl'
 
 ws_update_dns(){
 
