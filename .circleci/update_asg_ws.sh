@@ -122,7 +122,7 @@ if [[ "$RUN_WS_PLAN" = "true" ]]; then
     ws_plan_asg
 elif [[ "$RUN_WS_APPLY" = "true" ]]; then
     ws_apply_asg
-elif [[ "$RUN_WS_PLAN" = "false" ]] || [[ "$RUN_WS_APPLY" = "false" ]]
+elif [[ "$RUN_WS_PLAN" = "false" ]] || [[ "$RUN_WS_APPLY" = "false" ]]; then
     echo "####################################"
     echo "Changes will not be applied"
     echo "####################################"
