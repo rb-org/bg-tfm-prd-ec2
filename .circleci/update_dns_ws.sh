@@ -79,8 +79,6 @@ ws_update_dns(){
         ] 
     } }"
 
-    echo $RR_UPDATE
-
     CHG_ID=$(aws route53 change-resource-record-sets --hosted-zone-id ${new_zone_id} --cli-input-json "${RR_UPDATE}" --query "ChangeInfo.Id" --output text)
 
     sleep 10
@@ -90,11 +88,36 @@ ws_update_dns(){
         echo "Update status: ${STATUS}"
     else
         echo "Something went wrong"
+        error_out
         exit 1
     fi
 
     echo "Change Id: ${CHG_ID}"
 }
 
+error_out(){
+    echo "Something went wrong"
+    echo "------------------------------------"
+    echo "DNS Update Vars"
+    echo
+    echo "Region: ${REGION}"
+    echo "RR Grn Health Chk Id: ${RR_GRN_WWW_HC_ID}"
+    echo "RR Blu Health Chk Id: ${RR_BLU_WWW_HC_ID}"
+    echo "RR Update json: ${RR_UPDATE}"
+    echo "Weighting Blu: $WEIGHT_BLU"
+    echo "Weighting Grn: $WEIGHT_GRN"
+    echo "Change Id: ${CHG_ID}"
+    echo "Update json: $RR_UPDATE"
+    exit 1
+}
 
-ws_update_dns
+if [[ "$RUN_WS_DNS_APPLY" = "true" ]]; then
+    ws_update_dns
+elif [[ "$RUN_WS_DNS_APPLY" = "false" ]]; then
+    echo "####################################"
+    echo "DNS updates will not be applied"
+    echo "####################################"
+else
+    error_out
+fi
+
