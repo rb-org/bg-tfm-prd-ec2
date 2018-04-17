@@ -92,6 +92,8 @@ ws_update_dns(){
         echo "Something went wrong"
         exit 1
     fi
+
+    echo "Change Id: ${CHG_ID}"
 }
 
 
