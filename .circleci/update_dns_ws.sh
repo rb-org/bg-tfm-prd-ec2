@@ -93,6 +93,8 @@ ws_update_dns(){
     fi
 
     echo "Change Id: ${CHG_ID}"
+
+    # This could be replaced with a "while do" loop until PENDING becomes INSYNC or times out after 60 secs
 }
 
 error_out(){
