@@ -1,0 +1,115 @@
+version: 0.2
+env:
+  variables:
+    BUILD_VPC_ID: ""
+    BUILD_SUBNET_ID: ""
+    AWS_REGION: ""
+    AWS_ACCOUNTS: ""
+    AWS_REGIONS: ""
+    SVR_TYPE: ""
+    CHEF_ENV: ""
+    CHEF_ROLE: ""
+    CHEF_ORG: ""
+    CHEF_SVR: ""
+    BUILD_VER: ""
+    REPO_SSH: "rb-auto@github.com:rb-org/bg-tfm-prd-ec2.git"
+    REPO: "rb-org/bg-tfm-prd-ec2.git"
+    AUTO_USER: "rb-auto"
+    CCI_USERNAME: "rb-org"
+    CCI_PROJECT: "bg-tfm-prd-ec2"
+  parameter-store:
+    CCI_TOKEN: "/circleci/api_token"
+    SSH_KEY: "/github/rb-org/automation/ssh_key"
+    GH_TOKEN: "/github/rb-org/automation/access_token"
+    ACCESS_KEY: "/cdb/user/access_key"
+    SECRET_KEY: "/cdb/user/secret_key"
+    CHEF_PEM: "/chef/server/validator_pem"
+    DB_SECRET: "/chef/encrypted_data_bag_secret"
+phases:
+  pre_build:
+    commands:
+      - export AWS_ACCESS_KEY_ID="$ACCESS_KEY"
+      - export AWS_SECRET_ACCESS_KEY="$SECRET_KEY"
+      - |
+        # Install AWS CLI
+        apt update
+        apt-get install python python-pip -y
+        pip install --upgrade pip
+        pip install awscli
+      - |
+        # Install hub
+        curl -qL -o /tmp/hub.tgz https://github.com/github/hub/releases/download/v2.2.9/hub-linux-amd64-2.2.9.tgz
+        tar -zxf /tmp/hub.tgz -C /tmp
+        PATH=$PATH:/tmp/hub-linux-amd64-2.2.9/bin
+      - |
+        # Get Chef validator pem and encrypted secrets hash <<  not working properly for validator pem - line feeds
+        echo "Pulling down Chef validator..."
+        #aws ssm get-parameters --with-decryption --names $CHEF_PEM --query 'Parameters[0].Value' --region $AWS_REGION | sed 's|\\\\n|\n|g; s/.$//; s/^.//' > /tmp/${CHEF_ORG}-validator.pem
+        echo "Pulling down Data Bag secret file..."
+        #aws ssm get-parameters --with-decryption --names $DB_SECRET --query 'Parameters[0].Value' --region $AWS_REGION | sed 's/.$//; s/^.//' > /tmp/encrypted_data_bag_secret
+      - |
+        # Install Packer
+        echo "Installing HashiCorp Packer..."
+        if [ ! -f "./packer.zip" ]; then curl -qL -o packer.zip https://releases.hashicorp.com/packer/1.2.0/packer_1.2.0_linux_amd64.zip; fi
+        if [ ! -d "./bin" ]; then mkdir ./bin; fi
+        if [ ! -f "./bin/packer" ]; then unzip packer.zip -d ./bin; fi
+      - |
+        # Create validator pem and db secret files
+        # echo $CHEF_PEM > /tmp/${CHEF_ORG}-validator_tmp.pem
+        # tr -d '\r' < /tmp/${CHEF_ORG}-validator_tmp.pem > /tmp/${CHEF_ORG}-validator.pem
+        aws s3 cp s3://bg-codebuild-artifacts/${CHEF_ORG}-validator.pem /tmp/${CHEF_ORG}-validator.pem
+        echo $DB_SECRET > /tmp/encrypted_data_bag_secret
+      - |
+        # check we got downloads correctly <<< this still needs to be resolved
+        echo "validator.pem"
+        cat /tmp/${CHEF_ORG}-validator.pem
+        echo "db secret"
+        cat /tmp/encrypted_data_bag_secret
+      - |
+        # validate packer json
+        echo "Validating ${SVR_TYPE}.json"
+        ./bin/packer validate packer/${SVR_TYPE}.json
+  build:
+    commands:
+      - APP_VER=$(echo $(echo $BUILD_VER | sed s/'Build_Release_'/''/) | sed s/'.zip'/''/)
+      - export APP_VER=$APP_VER
+      - echo "Building HashiCorp Packer template, ${SVR_TYPE}.json"
+      - ./bin/packer build -color=false packer/${SVR_TYPE}.json | tee build.log
+  post_build:
+    commands:
+      - |
+        echo "HashiCorp Packer build completed on `date`"
+        egrep "${AWS_REGION}\:\sami\-" build.log | cut -d' ' -f2 > ami_id.txt
+        # Packer doesn't return non-zero status; we must do that if Packer build failed
+        test -s ami_id.txt || exit 1
+        export AMI_ID=$(cat ami_id.txt)
+      - |
+        # Update AMI ID & App Version Env Vars in CircleCI
+        curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_ami_id_latest_dev", "value":"'$AMI_ID'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+        curl -u ${CCI_TOKEN}: -X POST --header "Content-Type: application/json" -d '{"name":"ws_app_ver_latest_dev", "value":"'$APP_VER'"}' https://circleci.com/api/v1.1/project/github/${CCI_USERNAME}/${CCI_PROJECT}/envvar 
+      - |
+        # Update Readme.md. 
+        README_WS_AMI_ID=$(cat README.md | grep -o "Latest WS AMI.*" |grep -o "ami-.*")
+        README_WS_APP_VER=$(cat README.md | grep -o "Latest WS App.*" |grep -o "20.*")
+        sed -i "s@${README_WS_AMI_ID}@$AMI_ID@g;" README.md
+        sed -i "s@${README_WS_APP_VER}@$APP_VER@g;" README.md
+      - |
+        # Commit to git
+        echo $SSH_KEY > /home/temp_ssh_key
+        export GIT_SSH_COMMAND="ssh -i /home/temp_ssh_key"
+        git config --global user.email "rb-auto@rb-org.com"
+        git config --global user.name "rb-auto"
+        git checkout -b "${CHEF_ROLE}-${APP_VER}"
+        git add README.md
+        git status
+        git commit -a -m "Update ASG ${CHEF_ROLE}" -m "Created $AMI_ID in $AWS_REGION with build ver $APP_VER"
+        git push -v https://${AUTO_USER}:${GH_TOKEN}@github.com/${REPO} ${CHEF_ROLE}-${APP_VER}
+      - |
+        # Create PR with hub
+        export GITHUB_TOKEN=$GH_TOKEN
+        hub pull-request -f -m "New WS AMI for App Build $APP_VER"
+artifacts:
+  files:
+    - ami_id.txt
+    - build.log
+  discard-paths: yes
