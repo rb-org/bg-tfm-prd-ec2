@@ -107,7 +107,7 @@ phases:
       - |
         # Create PR with hub
         export GITHUB_TOKEN=$GH_TOKEN
-        hub pull-request -f -m "New WS AMI for App Build $APP_VER"
+        hub pull-request -b dev -f -m "New WS AMI for App Build $APP_VER"
 artifacts:
   files:
     - ami_id.txt
