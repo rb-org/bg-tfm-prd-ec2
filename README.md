@@ -10,9 +10,9 @@ Module for EC2 instances, ASG & ALB
 
 ## Latest AMI Id and App Version
 
-Latest WS AMI Id: ami-0be68699db9b7cc4e
+Latest WS AMI Id: ami-0d7eb65d18b7ec92c
 
-Latest WS App Version: 20180530.02
+Latest WS App Version: 20180531.01
 
 ## Terraform workspaces
 
